@@ -29,3 +29,15 @@ test('TC-CM-03 primeiro clique nunca é mina (50 partidas aleatórias)', async (
     expect(celula(0, 0)).toHaveAttribute('data-estado', 'aberta');
   }
 });
+
+test('TC-CM-04 números mostram quantas minas há em volta', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  // 0-8: minas em 0-9 e 1-9 · 5-8: 4-9, 5-9, 6-9 · 12-15: 11-16 · 12-16: 11-16, 11-17, 12-17, 13-17
+  const esperado = { '0-8': '2', '5-8': '3', '12-15': '1', '12-16': '4' };
+  for (const [posicao, valor] of Object.entries(esperado)) {
+    const [l, c] = posicao.split('-').map(Number);
+    await user.click(celula(l, c));
+    expect(celula(l, c)).toHaveAttribute('data-estado', 'aberta'); // busca de novo: a tela pode ter sido redesenhada
+    expect(celula(l, c)).toHaveAttribute('data-valor', valor);
+  }
+});

@@ -46,17 +46,19 @@ test('TC-CM-14 derrota marca bandeira errada', async () => {
 });
 
 test('TC-CM-15 vitória abre seguras e marca minas', async () => {
-  vi.useFakeTimers();
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
   const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
   await user.click(celula(5, 0));
+  vi.advanceTimersByTime(2000); // o cronômetro está contando
   await user.click(celula(5, 12));
   expect(celulasNoEstado('aberta')).toHaveLength(212);
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você venceu!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você venceu!$/);
   expect(celulasNoEstado('bandeira')).toHaveLength(40);
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
-  const tempo = screen.getByTestId('cronometro').textContent;
+  const tempo = Number(screen.getByTestId('cronometro').textContent);
+  expect(tempo).toBeGreaterThanOrEqual(1);
   vi.advanceTimersByTime(2000);
-  expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(new RegExp(`^${tempo}$`)); // parou
 });
 
 test('TC-CM-16 reiniciar restaura o estado inicial', async () => {

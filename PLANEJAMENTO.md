@@ -162,6 +162,8 @@ Cada tarefa segue o mesmo ciclo (TDD), e os **dois tipos de commit precisam exis
 
 Cada integrante é **dono de arquivos diferentes** (coluna "Arquivos"). Assim, depois da G1, os dois trabalham em paralelo sem conflito. Se precisar mexer num arquivo do outro, combine antes e faça um commit pequeno e separado.
 
+**Usando o Claude Code:** o agente segue a skill [`.claude/skills/tdd/SKILL.md`](.claude/skills/tdd/SKILL.md) (lida automaticamente pelo [`CLAUDE.md`](CLAUDE.md)). Para começar uma tarefa: `/tdd G2` (ou "use a skill tdd na tarefa B3"). Cada integrante roda o agente na própria máquina, com o próprio `git config`, para os commits saírem no nome de quem fez.
+
 ### Gustavo
 
 | Tarefa | Branch | Arquivos | Casos de teste |

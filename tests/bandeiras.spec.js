@@ -42,3 +42,37 @@ test('TC-CM-19 cascata não abre célula com bandeira', async () => {
   expect(celulasNoEstado('aberta')).toHaveLength(125);
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^39$/);
 });
+
+test('TC-CM-17 abertura rápida abre vizinhas sem bandeira', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(0, 8));
+  await cliqueDireito(user, celula(0, 9));
+  await cliqueDireito(user, celula(1, 9));
+  await user.dblClick(celula(0, 8));
+  for (const [linha, coluna] of [[0, 7], [1, 7], [1, 8]]) {
+    expect(celula(linha, coluna)).toHaveAttribute('data-estado', 'aberta');
+  }
+  expect(celulasNoEstado('mina-explodida')).toHaveLength(0);
+});
+
+test('TC-CM-20 abertura rápida exige todas as bandeiras', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(0, 8));
+  await cliqueDireito(user, celula(0, 9));
+  await user.dblClick(celula(0, 8));
+  for (const [linha, coluna] of [[0, 7], [1, 7], [1, 8]]) {
+    expect(celula(linha, coluna)).toHaveAttribute('data-estado', 'fechada');
+  }
+  expect(celula(0, 8)).toHaveAttribute('data-estado', 'aberta');
+});
+
+test('TC-CM-21 abertura rápida com bandeira errada causa derrota', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(0, 8));
+  await cliqueDireito(user, celula(1, 9));
+  await cliqueDireito(user, celula(0, 7));
+  await user.dblClick(celula(0, 8));
+  expect(celula(0, 9)).toHaveAttribute('data-estado', 'mina-explodida');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
+  expect(celula(0, 7)).toHaveAttribute('data-estado', 'bandeira-errada');
+});

@@ -20,3 +20,11 @@ test('TC-CM-02 estado inicial: contador 40 e cronômetro 0', async () => {
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
 });
+
+test('TC-CM-03 primeiro clique nunca é mina (20 partidas aleatórias)', async () => {
+  for (let i = 0; i < 20; i++) {
+    const user = await abrirJogo(); // sem parâmetros: minas sorteadas depois do 1º clique
+    await user.click(celula(0, 0));
+    expect(celula(0, 0)).toHaveAttribute('data-estado', 'aberta');
+  }
+});

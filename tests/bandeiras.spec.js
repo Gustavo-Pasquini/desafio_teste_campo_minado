@@ -75,6 +75,6 @@ test('TC-CM-21 abertura rápida com bandeira errada causa derrota', async () => 
   await cliqueDireito(user, celula(0, 7));
   await user.dblClick(celula(0, 8));
   expect(celula(0, 9)).toHaveAttribute('data-estado', 'mina-explodida');
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você perdeu!$/);
   expect(celula(0, 7)).toHaveAttribute('data-estado', 'bandeira-errada');
 });

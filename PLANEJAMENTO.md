@@ -1,15 +1,15 @@
 # Planejamento — desafio_teste_campo_minado
 
-Campo minado com tabuleiro **18 × 14 e 40 bombas**, jogável no navegador, com casos de teste de interface em JavaScript.
+Campo minado com tabuleiro **18 × 14 e 40 bombas**: **casos de teste de interface em JavaScript**. O jogo em si não é implementado por enquanto (fase GREEN desativada); os testes ficam falhando pelo motivo certo.
 
 | Integrante | GitHub | Papel neste repositório |
 |---|---|---|
-| Gustavo Mazeto Pasquini (24183078-2) | Gustavo-Pasquini | Setup do projeto, tabuleiro, geração das minas, números e abertura em cascata |
-| Breno Bertaglia Nosima (24113673-2) | BrenoNosima | Bandeiras, derrota, vitória, reinício, abertura rápida, CI e documentação dos testes |
+| Gustavo Mazeto Pasquini (24183078-2) | Gustavo-Pasquini | Setup do projeto e testes de: tabuleiro, geração das minas, números e abertura em cascata |
+| Breno Bertaglia Nosima (24113673-2) | BrenoNosima | Testes de: bandeiras, derrota, vitória, reinício, abertura rápida; CI e documentação dos testes |
 
 ---
 
-## 1. Regras que o jogo deve seguir (escopo)
+## 1. Regras do jogo (o que os testes verificam)
 
 - **Tabuleiro:** 18 colunas × 14 linhas = **252 células**. Linhas `0..13`, colunas `0..17`.
 - **40 minas**, 212 células seguras.
@@ -30,55 +30,70 @@ Campo minado com tabuleiro **18 × 14 e 40 bombas**, jogável no navegador, com 
 
 | Item | Escolha |
 |---|---|
-| Jogo | HTML + CSS + JavaScript puro (ES Modules), sem framework. Ponto de entrada: `js/main.js` |
+| Entrega atual | **Somente os casos de teste** (`tests/`). O código do jogo não é implementado até segunda ordem (ver [docs/FASE-GREEN.md](docs/FASE-GREEN.md)) |
 | Executor dos testes | [Vitest](https://vitest.dev) |
 | Testes de interface | [Testing Library](https://testing-library.com) (`@testing-library/dom` + `@testing-library/user-event` + `@testing-library/jest-dom`), em JavaScript |
 | "Navegador" dos testes | [jsdom](https://github.com/jsdom/jsdom) (`environment: 'jsdom'` no `vitest.config.js`). Não precisa baixar navegador |
-| Servidor para jogar | `http-server` (`npm start`) |
+| Esqueleto da tela | `index.html` com os elementos da seção 3 **vazios** + `js/main.js` vazio. É só o "molde" que os testes abrem |
 | Node | 18 ou superior |
-| CI | GitHub Actions rodando `npm ci` e `npm test` em todo push e Pull Request |
+| CI | GitHub Actions rodando `npm ci` e `npm run verificar` em todo push e Pull Request |
 
-Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`, `http-server`, `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`.
+Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`.
 
-Comandos que o projeto deve ter (criados na tarefa G1):
+Comandos que o projeto deve ter (`package.json` da tarefa G1):
 
 ```bash
-npm install          # instala dependências (não baixa navegador)
-npm start            # abre o jogo em http://localhost:8080 para jogar
-npm test             # roda todos os testes uma vez (vitest run)
-npm run test:watch   # roda de novo a cada arquivo salvo (vitest)
-npm run test:ui      # interface visual do Vitest no navegador (vitest --ui)
-npm run mutacao      # teste de mutação: os testes percebem quando o código é estragado? (stryker run)
+npm install                 # instala dependências (não baixa navegador)
+npm test                    # roda os testes (vitest run) — por enquanto TODOS falham, de propósito
+npm run verificar           # confere se cada teste falha pelo motivo certo e tem um ID do plano
+npm run verificar:completo  # idem + acusa TCs do plano que ainda não têm teste (usar na entrega)
+npm run test:ui             # interface visual do Vitest no navegador (vitest --ui)
 ```
 
-`stryker.config.json` (tarefa G1):
-
 ```json
-{
-  "testRunner": "vitest",
-  "vitest": { "configFile": "vitest.config.js" },
-  "mutate": ["js/**/*.js", "!js/main.js"],
-  "reporters": ["clear-text", "progress", "html"]
+"scripts": {
+  "test": "vitest run",
+  "test:ui": "vitest --ui",
+  "verificar": "node scripts/verificar-testes.mjs",
+  "verificar:completo": "node scripts/verificar-testes.mjs --completo"
 }
 ```
 
-Como um teste abre o jogo — `tests/helpers.js` (tarefa G1):
+### Por que os testes ficam falhando
+
+A fase GREEN (implementar o jogo) está **desativada até segunda ordem**. Então cada teste é escrito a partir da especificação (seções 1, 3 e 5) e precisa **falhar pelo motivo certo**:
+
+- ✅ **Motivo certo:** a asserção não bate ou o elemento não existe, porque o jogo ainda não faz aquilo. Por exemplo, `AssertionError`, `Unable to find an element by: [data-testid="carta-j1-0"]` ou `expect(element).toHaveTextContent()`.
+- ❌ **Motivo errado:** erro no próprio teste, como `TypeError`, `ReferenceError`, import quebrado ou arquivo que não carrega.
+- ❌ **Teste passando:** se passa com a tela vazia, ele não testa nada. Reescreva-o para conferir o comportamento da seção 5.
+
+O `scripts/verificar-testes.mjs` (já no repositório) faz essa conferência sozinho; o CI e o hook dos agentes usam ele.
+
+### Esqueleto da tela (`index.html`, tarefa G1)
+
+- Tem os elementos **fixos** da seção 3, cada um com seu `data-testid`, **sem texto, sem valor e sem atributos de estado** (`data-estado`, `disabled`, `hidden`). Senão algum teste passaria sem o jogo existir.
+- Elementos criados pelo jogo (células, cartas, peças, casas) **não** entram no esqueleto.
+- Carrega `<script type="module" src="js/main.js"></script>`; `js/main.js` fica só com um comentário até a fase GREEN.
+
+### Como um teste abre o jogo — `tests/helpers.js` (tarefa G1)
 
 ```js
 // tests/helpers.js
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
 
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+// Caminho a partir da raiz (no ambiente jsdom, `new URL(..., import.meta.url)` não funciona com o fs).
+const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
 const corpo = html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1];
 
 export async function abrirJogo(params = {}) {
   window.history.replaceState({}, '', '/?' + new URLSearchParams(params)); // parâmetros da seção 3
   document.body.innerHTML = corpo;          // mesmo HTML do jogo
   vi.resetModules();                        // cada teste começa um jogo novo
-  await import('../js/main.js');            // main.js lê location.search e inicia o jogo
+  await import('../js/main.js');            // vazio por enquanto; na fase GREEN, inicia o jogo
   return userEvent.setup();                 // "user" para clicar como um jogador
 }
 ```
@@ -97,39 +112,41 @@ test('TC-XX-01 exemplo', async () => {
 });
 ```
 
-Regras para os testes:
+### Regras para os testes
 
-- Os testes **só** acessam o jogo pelo que o usuário vê/clica: `screen.getByTestId(...)`, `getByRole(...)` e `user.click`, `user.dblClick`, `user.pointer(...)`. Nada de chamar funções internas do jogo.
+- Os testes **só** acessam o jogo pelo que o usuário vê/clica: `screen.getByTestId(...)`, `getByRole(...)` e `user.click`, `user.dblClick`, `user.pointer(...)`. Nada de importar `js/*.js` ou chamar funções internas.
 - Clique direito: `await user.pointer({ keys: '[MouseRight]', target: elemento })`. Clique duplo: `await user.dblClick(elemento)`.
-- O jsdom **não lê CSS**. Para esconder/mostrar algo use o atributo `hidden`; para bloquear botão, `disabled`. Assim `toBeVisible()` e `toBeDisabled()` funcionam.
+- O jsdom **não lê CSS**. Esconder/mostrar se confere pelo atributo `hidden` (`toBeVisible()`); bloqueio, pelo `disabled` (`toBeDisabled()`).
 - Tempo (cronômetro): `vi.useFakeTimers()` no teste, `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` e `vi.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
-- `main.js` inicia o jogo assim que é importado e não usa `DOMContentLoaded` (o `index.html` carrega com `<script type="module" src="js/main.js">`, que já roda depois do HTML).
 - Todo elemento que um teste usa tem `data-testid` (lista na seção 3). Se precisar de um novo, adicione na seção 3 no mesmo PR.
 - Aleatoriedade é controlada por **parâmetros de URL** (seção 3). Um teste nunca depende de sorte.
-- Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título**, para ser rastreável na saída do Vitest.
+- Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título** (o verificador exige).
+- Proibido `test.skip`, `test.todo` e `.only` (o verificador acusa).
 
-
-Arquivos para agentes de IA (já estão no repositório; ver [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md)):
+### Arquivos para agentes de IA (já estão no repositório; ver [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md))
 
 ```
 AGENTS.md                        instruções para qualquer agente (Codex lê sozinho)
 CLAUDE.md                        Claude Code: carrega o AGENTS.md + sub-agentes
 .agents/skills/tdd/SKILL.md      skill tdd para o Codex        ($tdd G2)
 .claude/skills/tdd/SKILL.md      skill tdd para o Claude Code  (/tdd G2) — cópia idêntica
-.claude/agents/                  sub-agentes: escritor-de-testes, implementador, revisor-tdd
+.claude/agents/                  sub-agentes: escritor-de-testes, revisor-tdd
 .claude/settings.json            hook do Claude Code
 .codex/hooks.json                hook do Codex (aprovar uma vez com /hooks)
-scripts/hooks/rodar-testes.mjs   o hook: roda npm test após editar js/ ou tests/
+scripts/verificar-testes.mjs     verificador (npm run verificar, CI e hook)
+scripts/hooks/rodar-testes.mjs   o hook: roda o verificador após editar tests/
 docs/TDD-COM-IA.md               técnicas de TDD com IA usadas aqui e fontes
+docs/FASE-GREEN.md               o que fazer quando a implementação for liberada
 ```
 
-Estrutura de pastas e dono de cada arquivo:
+Estrutura de pastas e dono de cada arquivo.
+
+> ⚠️ Os arquivos de `js/` (fora o `main.js` vazio) e o `css/` são da **fase GREEN, desativada até segunda ordem**: ninguém os cria agora. A divisão fica pronta para quando ela for liberada ([docs/FASE-GREEN.md](docs/FASE-GREEN.md)).
 
 ```
 desafio_teste_campo_minado/
-├── index.html              G1
-├── css/estilo.css          G1 (cada um estiliza a própria parte)
-├── js/main.js              G1  ponto de entrada: lê a URL e inicia o jogo
+├── index.html              G1  esqueleto: elementos fixos da seção 3, vazios
+├── js/main.js              G1  vazio (na fase GREEN: lê a URL e inicia o jogo)
 ├── js/tabuleiro.js         Gustavo  cria a grade, sorteia/recebe minas, conta vizinhas
 ├── js/revelar.js           Gustavo  abrir célula e cascata
 ├── js/ui.js                Gustavo  desenha o tabuleiro, contador, cronômetro
@@ -180,35 +197,37 @@ Com ele: clicar `5-0` abre as colunas 0–8 inteiras (126 células); clicar `5-1
 
 ## 4. Divisão de tarefas
 
-Cada tarefa segue o mesmo ciclo (TDD), e os **dois tipos de commit precisam existir**:
+> ⚠️ **Modo atual: somente testes.** A fase GREEN (implementar o jogo) está desativada até segunda ordem. As tarefas abaixo são de **escrever os casos de teste**; o código do jogo não é feito. Cada teste fica **falhando pelo motivo certo**. Quando a implementação for liberada: [docs/FASE-GREEN.md](docs/FASE-GREEN.md).
 
-1. Escrever os casos de teste da tarefa (vão falhar) → commit `test: TC-XX-NN ...`
-2. Implementar o mínimo para passar → commit `feat: ...`
-3. Refatorar se precisar, rodar `npm test` inteiro → commit `refactor:` / `fix:`
-4. Abrir Pull Request; o outro integrante revisa.
+Cada tarefa segue o mesmo ciclo, **um caso de teste por vez**:
 
-Cada integrante é **dono de arquivos diferentes** (coluna "Arquivos"). Assim, depois da G1, os dois trabalham em paralelo sem conflito. Se precisar mexer num arquivo do outro, combine antes e faça um commit pequeno e separado.
+1. Escrever o teste do TC só a partir da especificação (seções 1, 3 e 5), sem código do jogo.
+2. Rodar só ele (`npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"`) e conferir que **falha pelo motivo certo**: asserção ou elemento não encontrado, e não erro do próprio teste.
+3. `npm run verificar` sem problemas → commit `test: TC-XX-NN <cenário>`.
+4. No fim da tarefa: revisão, atualizar a tabela de testes do README e abrir o Pull Request; o outro integrante revisa.
 
-**Usando agentes de IA (Claude Code ou Codex):** os dois seguem a skill `tdd` (lida pelo [`AGENTS.md`](AGENTS.md)). Para começar uma tarefa: `/tdd G2` no Claude Code ou `$tdd G2` no Codex; depois, "go" faz o próximo TC. Como e por que funciona: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md). Cada integrante roda o agente na própria máquina, com o próprio `git config`, para os commits saírem no nome de quem fez.
+Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos"). Assim, depois da G1, os dois trabalham em paralelo sem conflito. `tests/helpers.js` é da G1: se precisar mudar, combine antes e faça um commit pequeno e separado.
+
+**Usando agentes de IA (Claude Code ou Codex):** os dois seguem a skill `tdd` (lida pelo [`AGENTS.md`](AGENTS.md)). Para começar uma tarefa: `/tdd G2` no Claude Code ou `$tdd G2` no Codex; depois, "go" escreve o próximo TC. Como e por que funciona: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md). Cada integrante roda o agente na própria máquina, com o próprio `git config`, para os commits saírem no nome de quem fez.
 
 ### Gustavo
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
-| **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js`, `.gitignore`, `index.html` com os `data-testid` da seção 3, `tests/helpers.js` com `abrirJogo(params)` e `MINAS_COLUNAS`, e um teste "a página abre" | `gustavo/g1-setup` | index.html, css, config, helpers | — |
-| **G2** Tabuleiro 18 × 14, contador e geração das 40 minas | `gustavo/g2-tabuleiro` | tabuleiro.js, ui.js | TC-CM-01 a 03 |
-| **G3** Números das vizinhas | `gustavo/g3-numeros` | tabuleiro.js | TC-CM-04 |
-| **G4** Abertura em cascata, célula aberta e cronômetro | `gustavo/g4-cascata` | revelar.js, ui.js | TC-CM-05 a 07 |
+| **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js` vazio, `.gitignore`, `index.html` esqueleto (elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado), `tests/helpers.js` com `abrirJogo(params)` e `MINAS_COLUNAS` | `gustavo/g1-setup` | index.html, js/main.js, config, tests/helpers.js | — |
+| **G2** Tabuleiro 18 × 14, contador e geração das 40 minas | `gustavo/g2-tabuleiro` | tests/tabuleiro.spec.js | TC-CM-01 a 03 |
+| **G3** Números das vizinhas | `gustavo/g3-numeros` | tests/tabuleiro.spec.js | TC-CM-04 |
+| **G4** Abertura em cascata, célula aberta e cronômetro | `gustavo/g4-cascata` | tests/revelar.spec.js | TC-CM-05 a 07 |
 
 ### Breno
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
-| **B1** CI no GitHub Actions (`npm ci`, `npm test`) + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
-| **B2** Bandeiras e limite de 40 | `breno/b2-bandeiras` | bandeiras.js | TC-CM-08 a 11 |
-| **B3** Derrota e bandeira errada | `breno/b3-derrota` | jogo.js | TC-CM-12 a 14 |
-| **B4** Vitória e reinício | `breno/b4-vitoria` | jogo.js | TC-CM-15, 16 |
-| **B5** Abertura rápida (clique duplo) | `breno/b5-abertura-rapida` | bandeiras.js | TC-CM-17 |
+| **B1** CI no GitHub Actions (`npm ci`, `npm run verificar`) + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
+| **B2** Bandeiras e limite de 40 | `breno/b2-bandeiras` | tests/bandeiras.spec.js | TC-CM-08 a 11 |
+| **B3** Derrota e bandeira errada | `breno/b3-derrota` | tests/fim-de-jogo.spec.js | TC-CM-12 a 14 |
+| **B4** Vitória e reinício | `breno/b4-vitoria` | tests/fim-de-jogo.spec.js | TC-CM-15, 16 |
+| **B5** Abertura rápida (clique duplo) | `breno/b5-abertura-rapida` | tests/bandeiras.spec.js | TC-CM-17 |
 
 ## 5. Casos de teste (interface)
 
@@ -251,10 +270,10 @@ Para o professor enxergar a contribuição dos dois, **cada um commita da própr
    git config user.name "Seu Nome"
    git config user.email "email-da-sua-conta@exemplo.com"
    ```
-3. Ninguém commita direto na `main`. Uma branch por tarefa: `gustavo/g2-distribuicao`, `breno/b2-truco`, etc.
-4. Mensagens no padrão Conventional Commits, em português: `test:`, `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `ci:`. Commits pequenos (um caso de teste ou uma regra por commit).
+3. Ninguém commita direto na `main`. Uma branch por tarefa: `gustavo/g2-...`, `breno/b2-...`, etc.
+4. Mensagens no padrão Conventional Commits, em português: `test:`, `docs:`, `chore:`, `ci:`. Commits pequenos: um caso de teste por commit.
 5. Pull Request para `main` → o **outro** integrante revisa e aprova → merge com **"Create a merge commit"** (não usar *squash*, para manter todos os commits de cada autor no histórico).
-6. Antes de abrir o PR: `git pull origin main`, `npm test` verde. O CI precisa estar verde no PR.
+6. Antes de abrir o PR: `git pull origin main` e `npm run verificar` sem problemas (os testes falham de propósito; o que não pode é teste passando ou falhando por erro do próprio teste). O CI precisa estar verde no PR.
 7. Ordem: **G1 entra primeiro** (estrutura do projeto). Depois disso as tarefas G e B podem andar em paralelo.
 
 Conferir no fim: aba **Insights → Contributors** do repositório deve mostrar os dois.
@@ -263,9 +282,10 @@ Conferir no fim: aba **Insights → Contributors** do repositório deve mostrar 
 
 O desafio só está pronto para entrega quando:
 
-- [ ] Todos os casos de teste da seção 5 implementados em `tests/` e passando com `npm test`
-- [ ] Jogo jogável do início ao fim com `npm start`, sem erros no console
+- [ ] Todos os casos de teste da seção 5 escritos em `tests/`, com o ID no título
+- [ ] `npm run verificar:completo` sem problemas: todos os TCs têm teste, e todos **falham pelo motivo certo** (a fase GREEN está desativada)
+- [ ] Nenhum código do jogo em `js/` (só o `js/main.js` vazio)
 - [ ] README com: colaboradores, como rodar, **funcionamento dos casos de teste** (tabela ID → arquivo → o que verifica) — tarefa B1
-- [ ] CI (GitHub Actions) verde na `main` — tarefa B1
+- [ ] CI (GitHub Actions rodando `npm run verificar`) verde na `main` — tarefa B1
 - [ ] Commits dos dois integrantes aparecendo em Insights → Contributors
 - [ ] Nome do repositório exatamente `desafio_teste_campo_minado`

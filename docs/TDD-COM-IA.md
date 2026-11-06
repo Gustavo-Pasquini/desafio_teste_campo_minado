@@ -2,6 +2,8 @@
 
 Este repositório pode ser desenvolvido com **Claude Code** ou **Codex**. Os dois seguem a mesma skill `tdd`. Este documento resume as técnicas de TDD com IA que pesquisamos, o que cada uma resolve e onde ela foi aplicada aqui.
 
+> ⚠️ **Modo atual: somente testes.** A fase GREEN (implementar o jogo) está desativada até segunda ordem. Só ficam ativas as técnicas da fase RED (coluna "Agora"); as outras estão guardadas em [FASE-GREEN.md](FASE-GREEN.md).
+
 ## O problema
 
 Agentes de IA sabem fazer TDD quando alguém pede, mas não fazem sozinhos. Sem regras, o agente tende a:
@@ -15,20 +17,21 @@ Cobertura alta não prova nada: é a métrica mais fácil de o agente "otimizar"
 
 ## Técnicas aplicadas
 
-| # | Técnica | Ideia | Onde está neste repositório |
-|---|---|---|---|
-| 1 | **Fatias verticais** (AI Hero) | Um teste → código mínimo → repetir. Nunca todos os testes antes de todo o código | Skill `tdd`, seções 2 e 4 |
-| 2 | **Vermelho pelo motivo certo** | O teste precisa falhar porque o comportamento não existe, não por erro de digitação | Skill, RED passo 4 |
-| 3 | **Testar só pela interface** (AI Hero) | Testes usam o que o jogador vê e clica; sem mock interno, sem estado interno | Skill, seção 3; contrato de `data-testid` no PLANEJAMENTO.md |
-| 4 | **Planejar antes do código** (AI Hero) | Combinar interface, ordem dos testes, módulos profundos e funções testáveis antes de codar | Skill, seção 1 |
-| 5 | **Lista de testes + "go"** (Kent Beck, *augmented coding*) | O agente mantém uma lista; "go" = pegar o próximo teste da lista e fazer só ele | Skill, seção 1 (a lista vem do `git log`, sem arquivo extra) |
-| 6 | **Commit do teste vermelho antes do código** | Deixa no histórico a prova de que o teste veio primeiro | Commits `test:` → `feat:`; conferido pelo `revisor-tdd` |
-| 7 | **Separar quem testa de quem implementa** (sub-agentes; artigos de alexop.dev e Codex) | Com contextos separados, a análise de quem escreve o teste não "vaza" para quem implementa, e vice-versa | `.claude/agents/escritor-de-testes.md` e `implementador.md`; no Codex, as fases com regras de leitura/escrita |
-| 8 | **Anti-trapaça e triangulação** | Conferir se o código não decorou o teste; usar mais exemplos (`test.each`, próximo TC) para forçar a regra geral | Skill, GREEN passo 3 |
-| 9 | **Hooks em vez de só instruções** (TDD Guard; documentação de hooks do Codex) | Instrução em Markdown é só conselho; um hook roda sempre | `scripts/hooks/rodar-testes.mjs`, ligado em `.claude/settings.json` e `.codex/hooks.json` |
-| 10 | **Revisão independente** | Uma segunda passada, em contexto limpo, procura teste fraco e código que decorou o teste | Sub-agente `revisor-tdd` (Claude) ou sessão nova (Codex) |
-| 11 | **Teste de mutação** (Stryker; tese da Univ. de Twente) | Altera o código de propósito; se nenhum teste falhar, falta caso de teste. Mede a qualidade dos testes melhor que a cobertura | `npm run mutacao`, skill seção 6; o revisor sugere novos TCs para os mutantes sobreviventes |
-| 12 | **CI como portão final** | O merge só acontece com tudo verde no GitHub Actions | Tarefa B1 |
+| # | Técnica | Ideia | Onde está neste repositório | Agora |
+|---|---|---|---|---|
+| 1 | **Fatias verticais** (AI Hero) | Um teste → código mínimo → repetir. Nunca todos os testes antes de todo o código | Skill `tdd`, seções 2 e 4 | ✅ |
+| 2 | **Vermelho pelo motivo certo** | O teste precisa falhar porque o comportamento não existe, não por erro de digitação | Skill, RED passo 4 | ✅ |
+| 3 | **Testar só pela interface** (AI Hero) | Testes usam o que o jogador vê e clica; sem mock interno, sem estado interno | Skill, seção 3; contrato de `data-testid` no PLANEJAMENTO.md | ✅ |
+| 4 | **Planejar antes do código** (AI Hero) | Combinar interface, ordem dos testes, módulos profundos e funções testáveis antes de codar | Skill, seção 1 | ✅ |
+| 5 | **Lista de testes + "go"** (Kent Beck, *augmented coding*) | O agente mantém uma lista; "go" = pegar o próximo teste da lista e fazer só ele | Skill, seção 1 (a lista vem do `git log`, sem arquivo extra) | ✅ |
+| 6 | **Commit do teste vermelho antes do código** | Deixa no histórico a prova de que o teste veio primeiro | Commits `test:` → `feat:`; conferido pelo `revisor-tdd` | ✅ (só `test:`) |
+| 7 | **Separar quem testa de quem implementa** (sub-agentes; artigos de alexop.dev e Codex) | Com contextos separados, a análise de quem escreve o teste não "vaza" para quem implementa, e vice-versa | `.claude/agents/escritor-de-testes.md` e `revisor-tdd.md`; o `implementador` está guardado em `docs/fase-green/` | ✅ escritor / revisor · ⏸ implementador |
+| 8 | **Anti-trapaça e triangulação** | Conferir se o código não decorou o teste; usar mais exemplos (`test.each`, próximo TC) para forçar a regra geral | Skill, GREEN passo 3 | ⏸ |
+| 9 | **Hooks em vez de só instruções** (TDD Guard; documentação de hooks do Codex) | Instrução em Markdown é só conselho; um hook roda sempre | `scripts/hooks/rodar-testes.mjs`, ligado em `.claude/settings.json` e `.codex/hooks.json` | ✅ |
+| 10 | **Revisão independente** | Uma segunda passada, em contexto limpo, procura teste fraco e código que decorou o teste | Sub-agente `revisor-tdd` (Claude) ou sessão nova (Codex) | ✅ |
+| 11 | **Teste de mutação** (Stryker; tese da Univ. de Twente) | Altera o código de propósito; se nenhum teste falhar, falta caso de teste. Mede a qualidade dos testes melhor que a cobertura | `npm run mutacao`, skill seção 6; o revisor sugere novos TCs para os mutantes sobreviventes | ⏸ |
+| 12 | **CI como portão final** | O merge só acontece com tudo verde no GitHub Actions | Tarefa B1 | ✅ (`npm run verificar`) |
+| 13 | **Verificador do RED** (criado para este projeto) | Sem implementação, "falhar" não basta: é preciso falhar **pelo motivo certo**. O verificador classifica cada falha (asserção/elemento ausente = certo; `TypeError`, import quebrado = erro do teste), acusa teste que passa sem o jogo e título sem ID do plano | `scripts/verificar-testes.mjs` (CI, hook e `npm run verificar`) | ✅ |
 
 ## O que ficou de fora (e por quê)
 
@@ -42,8 +45,8 @@ Cobertura alta não prova nada: é a métrica mais fácil de o agente "otimizar"
    - **Claude Code:** `/tdd G2`. O `CLAUDE.md` já carrega o `AGENTS.md`.
    - **Codex:** `$tdd G2`. O Codex lê o `AGENTS.md` sozinho. Na primeira vez, aprove o hook com `/hooks`.
 3. Revisar o plano que o agente mostrar (lista de TCs e interface) e confirmar.
-4. Dizer **"go"** a cada TC, ou deixar o agente seguir a lista. Conferir cada falha no RED.
-5. No fim: revisão (`revisor-tdd` ou sessão nova), `npm run mutacao`, e PR para o outro integrante revisar.
+4. Dizer **"go"** a cada TC, ou deixar o agente seguir a lista. Conferir a mensagem de cada falha.
+5. No fim: revisão (`revisor-tdd` ou sessão nova), `npm run verificar`, e PR para o outro integrante revisar.
 
 ## Fontes
 

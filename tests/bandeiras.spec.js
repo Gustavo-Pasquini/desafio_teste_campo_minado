@@ -65,3 +65,14 @@ test('TC-CM-20 abertura rápida exige todas as bandeiras', async () => {
   }
   expect(celula(0, 8)).toHaveAttribute('data-estado', 'aberta');
 });
+
+test('TC-CM-21 abertura rápida com bandeira errada causa derrota', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(0, 8));
+  await cliqueDireito(user, celula(1, 9));
+  await cliqueDireito(user, celula(0, 7));
+  await user.dblClick(celula(0, 8));
+  expect(celula(0, 9)).toHaveAttribute('data-estado', 'mina-explodida');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
+  expect(celula(0, 7)).toHaveAttribute('data-estado', 'bandeira-errada');
+});

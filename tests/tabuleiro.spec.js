@@ -14,3 +14,9 @@ test('TC-CM-01 tabuleiro 18 × 14: 252 células fechadas', async () => {
   expect(screen.queryByTestId('celula-14-0')).toBeNull();
   expect(screen.queryByTestId('celula-0-18')).toBeNull();
 });
+
+test('TC-CM-02 estado inicial: contador 40 e cronômetro 0', async () => {
+  await abrirJogo();
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
+});

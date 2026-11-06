@@ -28,3 +28,19 @@ test('TC-CM-06 célula aberta não muda com novos cliques', async () => {
   expect(celula(5, 8)).toHaveAttribute('data-estado', 'aberta');
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
 });
+
+test('TC-CM-07 cronômetro começa no primeiro clique', async () => {
+  vi.useFakeTimers(); // relógio falso: "esperar" sem esperar de verdade
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  const segundos = () => Number(screen.getByTestId('cronometro').textContent);
+
+  vi.advanceTimersByTime(2000);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/); // sem clique, não conta
+
+  await user.click(celula(5, 0));
+  vi.advanceTimersByTime(2000);
+  const depois = segundos();
+  expect(depois).toBeGreaterThanOrEqual(1);
+  vi.advanceTimersByTime(1000);
+  expect(segundos()).toBeGreaterThan(depois);
+});

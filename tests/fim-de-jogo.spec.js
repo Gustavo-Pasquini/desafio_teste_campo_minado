@@ -34,3 +34,39 @@ test('TC-CM-14 derrota marca bandeira errada', async () => {
   await user.click(celula(0, 9));
   expect(celula(5, 0)).toHaveAttribute('data-estado', 'bandeira-errada');
 });
+
+test('TC-CM-15 vitória abre seguras e marca minas', async () => {
+  vi.useFakeTimers();
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  await user.click(celula(5, 0));
+  await user.click(celula(5, 12));
+  expect(celulasNoEstado('aberta')).toHaveLength(212);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você venceu!');
+  expect(celulasNoEstado('bandeira')).toHaveLength(40);
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
+  const tempo = screen.getByTestId('cronometro').textContent;
+  vi.advanceTimersByTime(2000);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
+});
+
+test('TC-CM-16 reiniciar restaura o estado inicial', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(5, 0));
+  await cliqueDireito(user, celula(0, 9));
+  await user.click(screen.getByTestId('btn-reiniciar'));
+  expect(celulasNoEstado('fechada')).toHaveLength(252);
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
+  expect(screen.getByTestId('mensagem')).toBeEmptyDOMElement();
+});
+
+test('TC-CM-22 bandeiras nas minas não dão vitória', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  for (const posicao of MINAS_COLUNAS.split(',')) {
+    const [linha, coluna] = posicao.split('-').map(Number);
+    await cliqueDireito(user, celula(linha, coluna));
+  }
+  expect(screen.getByTestId('mensagem')).not.toHaveTextContent('Você venceu!');
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
+  expect(celulasNoEstado('fechada')).toHaveLength(212);
+});

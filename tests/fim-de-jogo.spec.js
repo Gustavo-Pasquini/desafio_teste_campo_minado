@@ -48,3 +48,14 @@ test('TC-CM-15 vitória abre seguras e marca minas', async () => {
   vi.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
 });
+
+test('TC-CM-16 reiniciar restaura o estado inicial', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(5, 0));
+  await cliqueDireito(user, celula(0, 9));
+  await user.click(screen.getByTestId('btn-reiniciar'));
+  expect(celulasNoEstado('fechada')).toHaveLength(252);
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
+  expect(screen.getByTestId('mensagem')).toBeEmptyDOMElement();
+});

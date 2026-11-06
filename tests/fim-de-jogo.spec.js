@@ -5,17 +5,23 @@ import { abrirJogo, screen, celula, todasAsCelulas, celulasNoEstado, cliqueDirei
 afterEach(() => vi.useRealTimers());
 
 test('TC-CM-12 derrota revela minas e trava a partida', async () => {
-  vi.useFakeTimers();
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
   const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  await user.click(celula(5, 12)); // abre o lado direito e liga o cronômetro
+  vi.advanceTimersByTime(2000);
   await user.click(celula(0, 9));
   expect(celula(0, 9)).toHaveAttribute('data-estado', 'mina-explodida');
-  expect(celulasNoEstado('mina')).toHaveLength(39);
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
-  const tempo = screen.getByTestId('cronometro').textContent;
+  for (const posicao of MINAS_COLUNAS.split(',').filter((p) => p !== '0-9')) {
+    const [linha, coluna] = posicao.split('-').map(Number);
+    expect(celula(linha, coluna)).toHaveAttribute('data-estado', 'mina'); // as outras 39, nas posições certas
+  }
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você perdeu!$/);
+  const tempo = Number(screen.getByTestId('cronometro').textContent);
+  expect(tempo).toBeGreaterThanOrEqual(1);
   await user.click(celula(5, 0));
   expect(celula(5, 0)).toHaveAttribute('data-estado', 'fechada');
   vi.advanceTimersByTime(2000);
-  expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(new RegExp(`^${tempo}$`)); // parou
 });
 
 test('TC-CM-13 modo aleatório contém quarenta minas', async () => {

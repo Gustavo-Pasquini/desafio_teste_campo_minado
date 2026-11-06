@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campo minado</title>
+</head>
+<body>
+  <!--
+    ESQUELETO DA TELA (contrato da seção 3 do PLANEJAMENTO.md).
+    Elementos fixos, VAZIOS: sem texto, sem valor e sem atributos de estado
+    (data-estado, disabled, hidden). Os testes abrem este HTML.
+    Fase GREEN desativada: o jogo (js/) ainda não existe.
+  -->
+  <header>
+    <span data-testid="contador-minas"></span>
+    <button data-testid="btn-reiniciar"></button>
+    <span data-testid="cronometro"></span>
+  </header>
+  <main>
+    <div data-testid="tabuleiro"></div>
+  </main>
+  <footer>
+    <p data-testid="mensagem"></p>
+  </footer>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

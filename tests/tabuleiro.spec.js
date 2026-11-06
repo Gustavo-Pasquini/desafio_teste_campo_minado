@@ -41,3 +41,10 @@ test('TC-CM-04 números mostram quantas minas há em volta', async () => {
     expect(celula(l, c)).toHaveAttribute('data-valor', valor);
   }
 });
+
+test('TC-CM-18 célula sem minas em volta mostra 0', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(5, 0)); // nenhuma mina nas 8 vizinhas
+  expect(celula(5, 0)).toHaveAttribute('data-estado', 'aberta');
+  expect(celula(5, 0)).toHaveAttribute('data-valor', '0');
+});

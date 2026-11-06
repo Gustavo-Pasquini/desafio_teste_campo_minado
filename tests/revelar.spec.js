@@ -32,7 +32,9 @@ test('TC-CM-06 célula aberta não muda com novos cliques', async () => {
 });
 
 test('TC-CM-07 cronômetro começa no primeiro clique', async () => {
-  vi.useFakeTimers(); // relógio falso: "esperar" sem esperar de verdade
+  // Relógio falso: "esperar" sem esperar de verdade. Inclui Date e performance.now,
+  // para valer qualquer que seja a forma de o jogo medir o tempo.
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
   const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
   const segundos = () => Number(screen.getByTestId('cronometro').textContent);
 

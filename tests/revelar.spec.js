@@ -18,3 +18,13 @@ test('TC-CM-05 cascata: clicar 5-0 abre as colunas 0 a 8', async () => {
   }
   expect(celula(5, 10)).toHaveAttribute('data-estado', 'fechada');
 });
+
+test('TC-CM-06 célula aberta não muda com novos cliques', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(5, 8)); // número 3: abre só ela
+  expect(celula(5, 8)).toHaveAttribute('data-estado', 'aberta');
+  await user.click(celula(5, 8));
+  await cliqueDireito(user, celula(5, 8));
+  expect(celula(5, 8)).toHaveAttribute('data-estado', 'aberta');
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+});

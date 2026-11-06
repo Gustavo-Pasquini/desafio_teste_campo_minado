@@ -42,4 +42,11 @@ O projeto está preparado para **Claude Code** e **Codex**. Os dois escrevem os 
 - Claude Code: `/tdd G2` · Codex: `$tdd G2` · depois, "go" escreve o próximo caso de teste.
 - Detalhes, técnicas e fontes: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md).
 
-> Status: em planejamento. A tabela "ID → arquivo → o que verifica" será preenchida aqui conforme os testes forem escritos (tarefa B1).
+## Rastreabilidade dos testes
+
+| IDs | Arquivo | O que verifica |
+|---|---|---|
+| TC-CM-01–04, 18 | `tests/tabuleiro.spec.js` | Dimensões, estado inicial, primeiro clique seguro e números |
+| TC-CM-05–07 | `tests/revelar.spec.js` | Cascata, célula aberta e cronômetro |
+| TC-CM-08–11, 17, 19–21 | `tests/bandeiras.spec.js` | Bandeiras, limite, cascata protegida e abertura rápida |
+| TC-CM-12–16, 22 | `tests/fim-de-jogo.spec.js` | Derrota, vitória, reinício e bloqueio de vitória por bandeiras |

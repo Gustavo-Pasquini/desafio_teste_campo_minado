@@ -23,6 +23,8 @@ test('TC-CM-10 bandeira protege a célula do clique esquerdo', async () => {
   await user.click(celula(0, 9));
   expect(celula(0, 9)).toHaveAttribute('data-estado', 'bandeira');
   expect(screen.getByTestId('mensagem')).not.toHaveTextContent('Você perdeu!');
+  await user.click(celula(5, 0)); // a partida continua: outra célula ainda abre
+  expect(celula(5, 0)).toHaveAttribute('data-estado', 'aberta');
 });
 
 test('TC-CM-11 limita a quarenta bandeiras', async () => {

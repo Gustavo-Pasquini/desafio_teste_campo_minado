@@ -26,6 +26,8 @@ test('TC-CM-06 célula aberta não muda com novos cliques', async () => {
   await user.click(celula(5, 8));
   await cliqueDireito(user, celula(5, 8));
   expect(celula(5, 8)).toHaveAttribute('data-estado', 'aberta');
+  expect(celula(5, 8)).toHaveAttribute('data-valor', '3');
+  expect(celulasNoEstado('aberta')).toHaveLength(1); // nenhum clique abriu outra célula
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
 });
 

@@ -1,6 +1,6 @@
 // Testes de derrota, vitória e reinício (Breno — B3 e B4).
 import { test, expect, vi, afterEach } from 'vitest';
-import { abrirJogo, screen, celula, todasAsCelulas, celulasNoEstado, cliqueDireito, MINAS_COLUNAS } from './helpers.js';
+import { abrirJogo, screen, celula, todasAsCelulas, celulasNoEstado, cliqueDireito, MINAS_COLUNAS, LINHAS, COLUNAS } from './helpers.js';
 
 afterEach(() => vi.useRealTimers());
 
@@ -26,11 +26,15 @@ test('TC-CM-12 derrota revela minas e trava a partida', async () => {
 
 test('TC-CM-13 modo aleatório contém quarenta minas', async () => {
   const user = await abrirJogo();
-  for (const alvo of todasAsCelulas()) {
-    if (screen.getByTestId('mensagem').textContent.includes('perdeu')) break;
-    if (alvo.getAttribute('data-estado') === 'fechada') await user.click(alvo);
+  expect(todasAsCelulas()).toHaveLength(LINHAS * COLUNAS);
+  varredura: for (let linha = 0; linha < LINHAS; linha++) {
+    for (let coluna = 0; coluna < COLUNAS; coluna++) {
+      if (screen.getByTestId('mensagem').textContent.includes('perdeu')) break varredura;
+      // busca a célula de novo a cada passo: o jogo pode redesenhar o tabuleiro depois de um clique
+      if (celula(linha, coluna).getAttribute('data-estado') === 'fechada') await user.click(celula(linha, coluna));
+    }
   }
-  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
+  expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você perdeu!$/);
   expect([...celulasNoEstado('mina'), ...celulasNoEstado('mina-explodida')]).toHaveLength(40);
 });
 

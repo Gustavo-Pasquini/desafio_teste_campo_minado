@@ -1,18 +1,18 @@
 ---
 name: tdd
-description: Implementa uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5) com TDD em fatias verticais — um caso de teste de interface (Vitest + Testing Library) falhando, o mínimo de código para passar, repetir, e só então refatorar. Use sempre que for criar ou alterar casos de teste ou código do jogo neste repositório.
+description: Implementa uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5) com TDD em fatias verticais — um caso de teste de interface (Vitest + Testing Library) falhando, o mínimo de código para passar, repetir, e só então refatorar e revisar. Use sempre que for criar ou alterar casos de teste ou código do jogo neste repositório, ou quando o usuário disser "próximo"/"go".
 ---
 
 # TDD neste repositório
 
-Baseado nas ideias de [Test-Driven Development com Claude Code (AI Hero)](https://www.aihero.dev/skill-test-driven-development-claude-code), adaptadas para este projeto: testes de interface com Vitest + Testing Library, casos de teste numerados (`TC-..-NN`) no `PLANEJAMENTO.md` e duas pessoas dividindo o trabalho.
+Vale para **Claude Code** (`/tdd G2`) e **Codex** (`$tdd G2`). Esta skill existe em duas cópias idênticas, `.claude/skills/tdd/SKILL.md` e `.agents/skills/tdd/SKILL.md`: ao mudar uma, mude a outra. As técnicas e as fontes estão em [`docs/TDD-COM-IA.md`](../../../docs/TDD-COM-IA.md).
 
 ## Por que assim
 
 Quando o agente escreve o código antes e os testes depois (ou todos os testes de uma vez), os testes acabam conferindo o que o agente *imagina* que o código faz, não o comportamento pedido. Aí aparecem testes que passam sem testar nada, mocks do próprio jogo e testes reescritos só para ficarem verdes. Por isso a regra aqui é **um teste por vez, falhando primeiro**.
 
 - ❌ **Horizontal (proibido):** escrever todos os testes da tarefa, depois todo o código.
-- ✅ **Vertical (obrigatório):** um ciclo por caso de teste: `TC` vermelho → código mínimo → verde → próximo `TC`. Cada ciclo aproveita o que o anterior mostrou.
+- ✅ **Vertical (obrigatório):** um ciclo por caso de teste: `TC` vermelho → código mínimo → verde → próximo `TC`.
 
 ## 0. Antes de começar: qual tarefa e de quem
 
@@ -21,12 +21,19 @@ Quando o agente escreve o código antes e os testes depois (ou todos os testes d
 3. Trabalhe **só nos arquivos do dono da tarefa**. Se precisar mexer num arquivo do outro integrante, pare e avise.
 4. Confira a branch: `gustavo/<tarefa>` ou `breno/<tarefa>` (seção 4). Nunca commite na `main`. Os commits saem com o `git config` da pessoa que está usando o agente; não altere `user.name`/`user.email`.
 
-## 1. Planejamento (antes de qualquer código)
+## 1. Lista de testes e planejamento (antes de qualquer código)
 
-Apresente ao usuário e espere a confirmação:
+**Lista de testes:** os `TC` da tarefa, na ordem em que serão feitos (caminho principal primeiro, bordas depois). Para saber o que já foi feito, sem arquivo extra de controle:
+
+```bash
+git log --oneline --grep "TC-"     # cada TC feito tem um commit test: e um feat:
+```
+
+Quando o usuário disser **"próximo"** ou **"go"**: pegue o primeiro `TC` da lista que ainda não tem commit `feat:` e faça **um** ciclo completo com ele.
+
+Apresente também e espere a confirmação:
 
 - **Interface:** quais `data-testid` e parâmetros de URL da seção 3 a tarefa usa. Se faltar algum, proponha a inclusão na seção 3 (no mesmo PR).
-- **Ordem dos casos:** liste os `TC` da tarefa na ordem em que vai fazer. Comece pelo caminho principal; casos de borda depois.
 - **Módulos profundos:** cada arquivo de `js/` expõe poucas funções simples que escondem a regra complicada (ex.: `manilhaDe(vira)`, `abrir(tabuleiro, linha, coluna)`). A lógica fica separada da tela (`ui*.js` só desenha e escuta cliques).
 - **Projeto testável:** funções da lógica **recebem** o que precisam (ex.: `embaralhar(cartas, aleatorio = Math.random)`) e **devolvem** o resultado, em vez de ler variáveis globais ou mexer no DOM. A aleatoriedade sempre pode ser trocada pelos parâmetros de URL.
 
@@ -34,23 +41,36 @@ Apresente ao usuário e espere a confirmação:
 
 ### 🔴 RED — um teste que falha
 
-1. Escreva **um** `test('TC-XX-NN <cenário>', ...)` no `tests/*.spec.js` indicado, seguindo a tabela da seção 5 (mesmos passos, mesmo resultado esperado).
-2. Rode só ele:
+1. Escreva **um** `test('TC-XX-NN <cenário>', ...)` no `tests/*.spec.js` indicado, seguindo a tabela da seção 5 (mesmos passos, mesmo resultado esperado). Se o TC é parametrizado (vários valores), use `test.each`, que conta como um TC só.
+2. Para escrever o teste, leia `PLANEJAMENTO.md`, `index.html` e `tests/`, **não** o código de `js/`: o teste nasce da especificação, não da implementação.
+3. Rode só ele:
    ```bash
    npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"
    ```
-3. Ele **tem que falhar pelo motivo certo**: a asserção não bate porque o comportamento ainda não existe. Erro de sintaxe, import quebrado ou `data-testid` com nome errado no teste não contam: corrija e rode de novo.
-4. Commit: `test: TC-XX-NN <cenário>`.
+4. Ele **tem que falhar pelo motivo certo**: a asserção não bate porque o comportamento ainda não existe. Erro de sintaxe, import quebrado ou `data-testid` digitado errado no teste não contam: corrija e rode de novo. Mostre ao usuário a mensagem de falha.
+5. Commit: `test: TC-XX-NN <cenário>`.
 
 ### 🟢 GREEN — o mínimo para passar
 
-1. Escreva só o código necessário para **este** teste. Nada "para depois", nada de casos que ainda não têm teste.
+1. Escreva só o código necessário para **este** teste. Nada "para depois", nada de casos que ainda não têm teste. **Não altere nada em `tests/`.**
 2. Rode o teste do ciclo e depois `npm test` (todos). Tudo verde.
-3. Commit: `feat: <regra implementada> (TC-XX-NN)`.
+3. **Anti-trapaça:** confira se o código não "decorou" o teste: nada de `if` com o cenário exato do teste (ex.: comparar com a string de `MINAS_COLUNAS`), nada de valor fixo que só serve para aquele caso. Se a solução honesta ainda parece um valor fixo, tudo bem por enquanto: o próximo TC (ou outro valor no `test.each`) vai forçar a generalização (**triangulação**).
+4. Commit: `feat: <regra implementada> (TC-XX-NN)`.
 
 ### 🔵 REFACTOR — só com tudo verde
 
 Quando os testes da tarefa passarem: tire duplicação, melhore nomes, simplifique. Sem mudar comportamento e **sem mexer nos testes para eles passarem**. `npm test` de novo → commit `refactor: ...`.
+
+### Separação de papéis (sub-agentes)
+
+Testes melhores saem quando quem escreve o teste não é quem escreve o código:
+
+- **Claude Code:** delegue o RED ao sub-agente `escritor-de-testes`, o GREEN ao `implementador` e, no fim da tarefa, chame o `revisor-tdd` (todos em `.claude/agents/`). Passe para cada um só o ID do TC e a saída do passo anterior.
+- **Codex** (ou sem sub-agentes): siga as fases com rigor (no RED, não abra `js/`; no GREEN, não edite `tests/`). Para a revisão final, abra **uma sessão nova** e peça a revisão do diff da branch com a seção 6 desta skill.
+
+### Feedback automático (hook)
+
+Depois de cada edição em `js/` ou `tests/`, o hook `scripts/hooks/rodar-testes.mjs` roda `npm test` e devolve o resultado ao agente. No RED, o esperado é **só o TC atual** falhando; qualquer outra falha deve ser resolvida antes de seguir. (Claude Code: `.claude/settings.json`. Codex: `.codex/hooks.json`, que precisa ser aprovado uma vez com `/hooks`.)
 
 ## 3. Como escrever um bom teste aqui
 
@@ -82,12 +102,26 @@ Se um teste quebra quando você refatora sem mudar o comportamento, ele está pr
 ## 5. Checklist por ciclo
 
 - [ ] O título do teste tem o ID `TC-XX-NN` da seção 5
+- [ ] Escrevi o teste sem olhar `js/`
 - [ ] Rodei e vi o teste falhar pelo motivo certo
 - [ ] Commit `test:` feito
-- [ ] Código mínimo, só nos arquivos do dono da tarefa
+- [ ] Código mínimo, só nos arquivos do dono da tarefa, sem tocar em `tests/`
+- [ ] Nada no código que só funcione para o cenário do teste
 - [ ] `npm test` inteiro verde
 - [ ] Commit `feat:` feito
-- [ ] (fim da tarefa) refatorei com tudo verde, commit `refactor:`, abri o PR para o outro integrante revisar
+
+## 6. Fim da tarefa: revisão e teste de mutação
+
+1. **Revisão** (sub-agente `revisor-tdd` ou sessão nova). Confere:
+   - cada TC da tarefa tem commit `test:` **antes** do `feat:` (`git log --oneline --reverse main..HEAD`);
+   - os testes seguem a seção 3 e nenhum código "decorou" um cenário;
+   - os títulos têm os IDs certos.
+2. **Teste de mutação** (recomendado): `npm run mutacao` (Stryker). Ele faz pequenas alterações de propósito no código (troca `<` por `<=`, `+` por `-`, apaga um `if`…) e confere se algum teste percebe:
+   - mutante **morto** = algum teste falhou = bom;
+   - mutante **sobrevivente** = nenhum teste percebeu a alteração = falta um caso de teste.
+
+   Para cada sobrevivente nos arquivos da tarefa, **proponha** ao usuário um novo TC (próximo número livre da seção 5) e, se ele aprovar, adicione-o ao `PLANEJAMENTO.md` (`docs:`) e faça um ciclo RED → GREEN normal. Não crie testes extras sem aprovação.
+3. `npm test` verde, `refactor:` se houver, e só então o PR para o outro integrante revisar.
 
 ## Exemplo de ciclo neste repositório
 

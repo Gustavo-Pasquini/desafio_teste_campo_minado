@@ -33,4 +33,11 @@ npm test       # testes de interface
 - **Rastreabilidade:** cada teste tem no título o ID do caso (`TC-..-NN`), igual à tabela do PLANEJAMENTO.md.
 - **Como rodar:** `npm test` (todos), `npx vitest run tests/<arquivo>.spec.js` (um arquivo), `npm run test:watch` (roda a cada alteração) e `npm run test:ui` (interface visual).
 
+## Desenvolvimento com agentes de IA
+
+O projeto está preparado para **Claude Code** e **Codex**, os dois seguindo TDD em fatias verticais. Cada um tem a skill `tdd`, um hook que roda os testes a cada edição e, no Claude Code, sub-agentes separados para escrever testes, implementar e revisar.
+
+- Claude Code: `/tdd G2` · Codex: `$tdd G2` · depois, "go" faz o próximo caso de teste.
+- Detalhes, técnicas e fontes: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md).
+
 > Status: em planejamento. A tabela "ID → arquivo → o que verifica" será preenchida aqui conforme os testes forem implementados (tarefa B1).

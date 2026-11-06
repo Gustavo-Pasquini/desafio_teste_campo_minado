@@ -38,7 +38,7 @@ Campo minado com tabuleiro **18 × 14 e 40 bombas**, jogável no navegador, com 
 | Node | 18 ou superior |
 | CI | GitHub Actions rodando `npm ci` e `npm test` em todo push e Pull Request |
 
-Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`, `http-server`.
+Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`, `http-server`, `@stryker-mutator/core`, `@stryker-mutator/vitest-runner`.
 
 Comandos que o projeto deve ter (criados na tarefa G1):
 
@@ -48,6 +48,18 @@ npm start            # abre o jogo em http://localhost:8080 para jogar
 npm test             # roda todos os testes uma vez (vitest run)
 npm run test:watch   # roda de novo a cada arquivo salvo (vitest)
 npm run test:ui      # interface visual do Vitest no navegador (vitest --ui)
+npm run mutacao      # teste de mutação: os testes percebem quando o código é estragado? (stryker run)
+```
+
+`stryker.config.json` (tarefa G1):
+
+```json
+{
+  "testRunner": "vitest",
+  "vitest": { "configFile": "vitest.config.js" },
+  "mutate": ["js/**/*.js", "!js/main.js"],
+  "reporters": ["clear-text", "progress", "html"]
+}
 ```
 
 Como um teste abre o jogo — `tests/helpers.js` (tarefa G1):
@@ -95,6 +107,21 @@ Regras para os testes:
 - Todo elemento que um teste usa tem `data-testid` (lista na seção 3). Se precisar de um novo, adicione na seção 3 no mesmo PR.
 - Aleatoriedade é controlada por **parâmetros de URL** (seção 3). Um teste nunca depende de sorte.
 - Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título**, para ser rastreável na saída do Vitest.
+
+
+Arquivos para agentes de IA (já estão no repositório; ver [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md)):
+
+```
+AGENTS.md                        instruções para qualquer agente (Codex lê sozinho)
+CLAUDE.md                        Claude Code: carrega o AGENTS.md + sub-agentes
+.agents/skills/tdd/SKILL.md      skill tdd para o Codex        ($tdd G2)
+.claude/skills/tdd/SKILL.md      skill tdd para o Claude Code  (/tdd G2) — cópia idêntica
+.claude/agents/                  sub-agentes: escritor-de-testes, implementador, revisor-tdd
+.claude/settings.json            hook do Claude Code
+.codex/hooks.json                hook do Codex (aprovar uma vez com /hooks)
+scripts/hooks/rodar-testes.mjs   o hook: roda npm test após editar js/ ou tests/
+docs/TDD-COM-IA.md               técnicas de TDD com IA usadas aqui e fontes
+```
 
 Estrutura de pastas e dono de cada arquivo:
 
@@ -162,7 +189,7 @@ Cada tarefa segue o mesmo ciclo (TDD), e os **dois tipos de commit precisam exis
 
 Cada integrante é **dono de arquivos diferentes** (coluna "Arquivos"). Assim, depois da G1, os dois trabalham em paralelo sem conflito. Se precisar mexer num arquivo do outro, combine antes e faça um commit pequeno e separado.
 
-**Usando o Claude Code:** o agente segue a skill [`.claude/skills/tdd/SKILL.md`](.claude/skills/tdd/SKILL.md) (lida automaticamente pelo [`CLAUDE.md`](CLAUDE.md)). Para começar uma tarefa: `/tdd G2` (ou "use a skill tdd na tarefa B3"). Cada integrante roda o agente na própria máquina, com o próprio `git config`, para os commits saírem no nome de quem fez.
+**Usando agentes de IA (Claude Code ou Codex):** os dois seguem a skill `tdd` (lida pelo [`AGENTS.md`](AGENTS.md)). Para começar uma tarefa: `/tdd G2` no Claude Code ou `$tdd G2` no Codex; depois, "go" faz o próximo TC. Como e por que funciona: [docs/TDD-COM-IA.md](docs/TDD-COM-IA.md). Cada integrante roda o agente na própria máquina, com o próprio `git config`, para os commits saírem no nome de quem fez.
 
 ### Gustavo
 

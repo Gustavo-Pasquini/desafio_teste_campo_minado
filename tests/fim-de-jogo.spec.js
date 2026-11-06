@@ -34,3 +34,17 @@ test('TC-CM-14 derrota marca bandeira errada', async () => {
   await user.click(celula(0, 9));
   expect(celula(5, 0)).toHaveAttribute('data-estado', 'bandeira-errada');
 });
+
+test('TC-CM-15 vitória abre seguras e marca minas', async () => {
+  vi.useFakeTimers();
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  await user.click(celula(5, 0));
+  await user.click(celula(5, 12));
+  expect(celulasNoEstado('aberta')).toHaveLength(212);
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você venceu!');
+  expect(celulasNoEstado('bandeira')).toHaveLength(40);
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
+  const tempo = screen.getByTestId('cronometro').textContent;
+  vi.advanceTimersByTime(2000);
+  expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
+});

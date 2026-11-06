@@ -89,12 +89,12 @@ import '@testing-library/jest-dom/vitest';
 const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
 const corpo = html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1];
 
-export async function abrirJogo(params = {}) {
+export async function abrirJogo(params = {}, opcoesUser = {}) {
   window.history.replaceState({}, '', '/?' + new URLSearchParams(params)); // parâmetros da seção 3
   document.body.innerHTML = corpo;          // mesmo HTML do jogo
   vi.resetModules();                        // cada teste começa um jogo novo
   await import('../js/main.js');            // vazio por enquanto; na fase GREEN, inicia o jogo
-  return userEvent.setup();                 // "user" para clicar como um jogador
+  return userEvent.setup(opcoesUser);       // "user" para clicar como um jogador
 }
 ```
 
@@ -117,7 +117,7 @@ test('TC-XX-01 exemplo', async () => {
 - Os testes **só** acessam o jogo pelo que o usuário vê/clica: `screen.getByTestId(...)`, `getByRole(...)` e `user.click`, `user.dblClick`, `user.pointer(...)`. Nada de importar `js/*.js` ou chamar funções internas.
 - Clique direito: `await user.pointer({ keys: '[MouseRight]', target: elemento })`. Clique duplo: `await user.dblClick(elemento)`.
 - O jsdom **não lê CSS**. Esconder/mostrar se confere pelo atributo `hidden` (`toBeVisible()`); bloqueio, pelo `disabled` (`toBeDisabled()`).
-- Tempo (cronômetro): `vi.useFakeTimers()` no teste, `userEvent.setup({ advanceTimers: vi.advanceTimersByTime })` e `vi.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
+- Tempo (cronômetro): `vi.useFakeTimers()` no teste, `abrirJogo(params, { advanceTimers: vi.advanceTimersByTime })` e `vi.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
 - Todo elemento que um teste usa tem `data-testid` (lista na seção 3). Se precisar de um novo, adicione na seção 3 no mesmo PR.
 - Aleatoriedade é controlada por **parâmetros de URL** (seção 3). Um teste nunca depende de sorte.
 - Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título** (o verificador exige).

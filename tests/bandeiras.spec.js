@@ -54,3 +54,14 @@ test('TC-CM-17 abertura rápida abre vizinhas sem bandeira', async () => {
   }
   expect(celulasNoEstado('mina-explodida')).toHaveLength(0);
 });
+
+test('TC-CM-20 abertura rápida exige todas as bandeiras', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(celula(0, 8));
+  await cliqueDireito(user, celula(0, 9));
+  await user.dblClick(celula(0, 8));
+  for (const [linha, coluna] of [[0, 7], [1, 7], [1, 8]]) {
+    expect(celula(linha, coluna)).toHaveAttribute('data-estado', 'fechada');
+  }
+  expect(celula(0, 8)).toHaveAttribute('data-estado', 'aberta');
+});

@@ -59,3 +59,14 @@ test('TC-CM-16 reiniciar restaura o estado inicial', async () => {
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
   expect(screen.getByTestId('mensagem')).toBeEmptyDOMElement();
 });
+
+test('TC-CM-22 bandeiras nas minas não dão vitória', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  for (const posicao of MINAS_COLUNAS.split(',')) {
+    const [linha, coluna] = posicao.split('-').map(Number);
+    await cliqueDireito(user, celula(linha, coluna));
+  }
+  expect(screen.getByTestId('mensagem')).not.toHaveTextContent('Você venceu!');
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
+  expect(celulasNoEstado('fechada')).toHaveLength(212);
+});

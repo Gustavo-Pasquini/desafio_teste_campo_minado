@@ -33,3 +33,12 @@ test('TC-CM-11 limita a quarenta bandeiras', async () => {
   expect(celulasNoEstado('bandeira')).toHaveLength(40);
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
 });
+
+test('TC-CM-19 cascata não abre célula com bandeira', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await cliqueDireito(user, celula(7, 3));
+  await user.click(celula(5, 0));
+  expect(celula(7, 3)).toHaveAttribute('data-estado', 'bandeira');
+  expect(celulasNoEstado('aberta')).toHaveLength(125);
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^39$/);
+});

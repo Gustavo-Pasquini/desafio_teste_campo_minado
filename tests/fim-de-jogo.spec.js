@@ -27,3 +27,10 @@ test('TC-CM-13 modo aleatório contém quarenta minas', async () => {
   expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
   expect([...celulasNoEstado('mina'), ...celulasNoEstado('mina-explodida')]).toHaveLength(40);
 });
+
+test('TC-CM-14 derrota marca bandeira errada', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await cliqueDireito(user, celula(5, 0));
+  await user.click(celula(0, 9));
+  expect(celula(5, 0)).toHaveAttribute('data-estado', 'bandeira-errada');
+});

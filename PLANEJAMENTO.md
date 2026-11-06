@@ -216,7 +216,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 |---|---|---|---|
 | **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js` vazio, `.gitignore`, `index.html` esqueleto (elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado), `tests/helpers.js` com `abrirJogo(params)` e `MINAS_COLUNAS` | `gustavo/g1-setup` | index.html, js/main.js, config, tests/helpers.js | — |
 | **G2** Tabuleiro 18 × 14, contador e geração das 40 minas | `gustavo/g2-tabuleiro` | tests/tabuleiro.spec.js | TC-CM-01 a 03 |
-| **G3** Números das vizinhas | `gustavo/g3-numeros` | tests/tabuleiro.spec.js | TC-CM-04 |
+| **G3** Números das vizinhas | `gustavo/g3-numeros` | tests/tabuleiro.spec.js | TC-CM-04, 18 |
 | **G4** Abertura em cascata, célula aberta e cronômetro | `gustavo/g4-cascata` | tests/revelar.spec.js | TC-CM-05 a 07 |
 
 ### Breno
@@ -244,6 +244,7 @@ Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo
 | TC-CM-05 | Cascata | `minas=MINAS_COLUNAS`, clicar 5-0 | 126 células `aberta` (colunas 0–8); `celula-5-10` continua `fechada` |
 | TC-CM-06 | Célula aberta não muda | Abrir 5-8, depois clique esquerdo e direito nela | Continua `aberta`; contador continua 40 |
 | TC-CM-07 | Cronômetro | Com relógio falso: avançar 2 s sem clicar; depois clicar 5-0 e avançar 2 s | Antes do clique = 0; depois do clique ≥ 1 e aumentando |
+| TC-CM-18 | Célula sem minas em volta | `minas=MINAS_COLUNAS`, clicar 5-0 | `celula-5-0` = `aberta` com `data-valor` = 0 |
 
 ### Breno — bandeiras e fim de jogo
 

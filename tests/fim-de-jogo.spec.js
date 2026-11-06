@@ -17,3 +17,13 @@ test('TC-CM-12 derrota revela minas e trava a partida', async () => {
   vi.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(tempo);
 });
+
+test('TC-CM-13 modo aleatório contém quarenta minas', async () => {
+  const user = await abrirJogo();
+  for (const alvo of todasAsCelulas()) {
+    if (screen.getByTestId('mensagem').textContent.includes('perdeu')) break;
+    if (alvo.getAttribute('data-estado') === 'fechada') await user.click(alvo);
+  }
+  expect(screen.getByTestId('mensagem')).toHaveTextContent('Você perdeu!');
+  expect([...celulasNoEstado('mina'), ...celulasNoEstado('mina-explodida')]).toHaveLength(40);
+});

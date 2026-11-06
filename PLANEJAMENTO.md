@@ -224,10 +224,10 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
 | **B1** CI no GitHub Actions (`npm ci`, `npm run verificar`) + tabela de testes no README | `breno/b1-ci-readme` | .github/workflows, README.md | — |
-| **B2** Bandeiras e limite de 40 | `breno/b2-bandeiras` | tests/bandeiras.spec.js | TC-CM-08 a 11 |
+| **B2** Bandeiras e limite de 40 | `breno/b2-bandeiras` | tests/bandeiras.spec.js | TC-CM-08 a 11, 19 |
 | **B3** Derrota e bandeira errada | `breno/b3-derrota` | tests/fim-de-jogo.spec.js | TC-CM-12 a 14 |
-| **B4** Vitória e reinício | `breno/b4-vitoria` | tests/fim-de-jogo.spec.js | TC-CM-15, 16 |
-| **B5** Abertura rápida (clique duplo) | `breno/b5-abertura-rapida` | tests/bandeiras.spec.js | TC-CM-17 |
+| **B4** Vitória e reinício | `breno/b4-vitoria` | tests/fim-de-jogo.spec.js | TC-CM-15, 16, 22 |
+| **B5** Abertura rápida (clique duplo) | `breno/b5-abertura-rapida` | tests/bandeiras.spec.js | TC-CM-17, 20, 21 |
 
 ## 5. Casos de teste (interface)
 
@@ -239,7 +239,7 @@ Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo
 |---|---|---|---|
 | TC-CM-01 | Tamanho do tabuleiro | Abrir a página | 252 células, 14 linhas × 18 colunas, todas `fechada` |
 | TC-CM-02 | Estado inicial | Abrir a página | `contador-minas` = 40, `cronometro` = 0 |
-| TC-CM-03 | Primeiro clique seguro | Sem parâmetros. 20 vezes: abrir o jogo de novo com `abrirJogo()` e clicar `0-0` | `celula-0-0` sempre `aberta` (nunca `mina-explodida`) |
+| TC-CM-03 | Primeiro clique seguro | Sem parâmetros. 50 vezes: abrir o jogo de novo com `abrirJogo()` e clicar `0-0` | `celula-0-0` sempre `aberta` (nunca `mina-explodida`) |
 | TC-CM-04 | Números corretos | `minas=MINAS_COLUNAS`. Clicar 0-8, 5-8, 12-15 e 12-16 | `data-valor` = 2, 3, 1 e 4 |
 | TC-CM-05 | Cascata | `minas=MINAS_COLUNAS`, clicar 5-0 | 126 células `aberta` (colunas 0–8); `celula-5-10` continua `fechada` |
 | TC-CM-06 | Célula aberta não muda | Abrir 5-8, depois clique esquerdo e direito nela | Continua `aberta`; contador continua 40 |
@@ -259,6 +259,10 @@ Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo
 | TC-CM-15 | Vitória | `minas=MINAS_COLUNAS`, clicar 5-0 e 5-12 | 212 células `aberta`; `mensagem` = "Você venceu!"; 40 minas com `bandeira`; contador = 0; cronômetro para |
 | TC-CM-16 | Reiniciar | Jogar um pouco, clicar `btn-reiniciar` | 252 `fechada`; contador 40; cronômetro 0; `mensagem` vazia |
 | TC-CM-17 | Abertura rápida | `minas=MINAS_COLUNAS`. Abrir 0-8 (valor 2), bandeira em 0-9 e 1-9, clique duplo em 0-8 | 0-7, 1-7 e 1-8 ficam `aberta`; nada explode |
+| TC-CM-19 | A cascata não abre bandeira | `minas=MINAS_COLUNAS`. Bandeira em 7-3 (sem mina), clicar 5-0 | `celula-7-3` continua `bandeira`; 125 células `aberta`; contador 39 |
+| TC-CM-20 | Abertura rápida com bandeiras a menos | `minas=MINAS_COLUNAS`. Abrir 0-8 (valor 2), bandeira só em 0-9, clique duplo em 0-8 | 0-7, 1-7 e 1-8 continuam `fechada` |
+| TC-CM-21 | Abertura rápida com bandeira errada | `minas=MINAS_COLUNAS`. Abrir 0-8, bandeiras em 1-9 e 0-7 (errada), clique duplo em 0-8 | `celula-0-9` = `mina-explodida`; `mensagem` = "Você perdeu!"; `celula-0-7` = `bandeira-errada` |
+| TC-CM-22 | Bandeiras não dão vitória | `minas=MINAS_COLUNAS`. Bandeira nas 40 minas, sem abrir nada | Sem "Você venceu!"; contador 0; as células seguras continuam `fechada` |
 
 ## 6. Fluxo de trabalho no Git
 

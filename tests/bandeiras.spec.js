@@ -8,3 +8,11 @@ test('TC-CM-08 clique direito coloca bandeira', async () => {
   expect(celula(3, 3)).toHaveAttribute('data-estado', 'bandeira');
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^39$/);
 });
+
+test('TC-CM-09 segundo clique direito tira bandeira', async () => {
+  const user = await abrirJogo();
+  await cliqueDireito(user, celula(3, 3));
+  await cliqueDireito(user, celula(3, 3));
+  expect(celula(3, 3)).toHaveAttribute('data-estado', 'fechada');
+  expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+});

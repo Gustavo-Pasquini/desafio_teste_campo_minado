@@ -21,10 +21,9 @@ test('TC-CM-02 estado inicial: contador 40 e cronômetro 0', async () => {
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
 });
 
-// Limitação conhecida: um jogo que sorteia as minas ANTES do 1º clique ainda passa
-// em ~3% das execuções ((212/252)^20 ≈ 0,031). Mais repetições reduzem esse risco.
-test('TC-CM-03 primeiro clique nunca é mina (20 partidas aleatórias)', async () => {
-  for (let i = 0; i < 20; i++) {
+// Um jogo que sorteasse as minas ANTES do 1º clique passaria só em ~0,02% das execuções ((212/252)^50).
+test('TC-CM-03 primeiro clique nunca é mina (50 partidas aleatórias)', async () => {
+  for (let i = 0; i < 50; i++) {
     const user = await abrirJogo(); // sem parâmetros: minas sorteadas depois do 1º clique
     await user.click(celula(0, 0));
     expect(celula(0, 0)).toHaveAttribute('data-estado', 'aberta');

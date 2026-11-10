@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Casos de teste de interface (Vitest + Testing Library) para Campo minado",
+  "description": "Casos de teste de interface (Jest + Testing Library) para Campo minado",
   "scripts": {
     "test": "jest",
     "verificar": "node scripts/verificar-testes.mjs",

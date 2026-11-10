@@ -21,8 +21,8 @@ const semCor = (s) => String(s ?? '').replace(/\x1b\[[0-9;]*m/g, '');
 const primeiraLinha = (s) => semCor(s).trim().split('\n')[0].slice(0, 160);
 
 export function verificar(raiz, { completo = false } = {}) {
-  const bin = join(raiz, 'node_modules', '.bin', process.platform === 'win32' ? 'vitest.cmd' : 'vitest');
-  if (!existsSync(bin)) return { ok: false, semSetup: true, texto: 'Vitest não instalado: rode `npm install` (o setup vem da tarefa G1).' };
+  const bin = join(raiz, 'node_modules', '.bin', process.platform === 'win32' ? 'jest.cmd' : 'jest');
+  if (!existsSync(bin)) return { ok: false, semSetup: true, texto: 'Jest não instalado: rode `npm install` (o setup vem da tarefa G1).' };
 
   const ids = new Set();
   const plano = join(raiz, 'PLANEJAMENTO.md');
@@ -30,8 +30,8 @@ export function verificar(raiz, { completo = false } = {}) {
 
   const pasta = mkdtempSync(join(tmpdir(), 'verificar-'));
   const saida = join(pasta, 'r.json');
-  spawnSync(bin, ['run', '--reporter=json', `--outputFile=${saida}`], { cwd: raiz, encoding: 'utf8', timeout: 110_000 });
-  if (!existsSync(saida)) { rmSync(pasta, { recursive: true, force: true }); return { ok: false, texto: 'O Vitest não gerou resultado (veja `npm test`).' }; }
+  spawnSync(bin, ['--json', `--outputFile=${saida}`], { cwd: raiz, encoding: 'utf8', timeout: 110_000 });
+  if (!existsSync(saida)) { rmSync(pasta, { recursive: true, force: true }); return { ok: false, texto: 'O Jest não gerou resultado (veja `npm test`).' }; }
   const r = JSON.parse(readFileSync(saida, 'utf8'));
   rmSync(pasta, { recursive: true, force: true });
 

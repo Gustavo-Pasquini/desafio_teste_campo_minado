@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Casos de teste de interface (Vitest + Testing Library) para Campo minado",
+  "description": "Casos de teste de interface (Jest + Testing Library) para Campo minado",
   "scripts": {
-    "test": "vitest run",
-    "test:ui": "vitest --ui",
+    "test": "jest",
     "verificar": "node scripts/verificar-testes.mjs",
     "verificar:completo": "node scripts/verificar-testes.mjs --completo"
   },
@@ -14,11 +13,22 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@babel/core": "7.26.0",
+    "@babel/preset-env": "7.26.0",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/user-event": "14.6.8",
-    "@vitest/ui": "3.2.7",
-    "jsdom": "26.1.0",
-    "vitest": "3.2.7"
+    "babel-jest": "29.7.0",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "<rootDir>/tests/**/*.spec.js"
+    ],
+    "transform": {
+      "\\.js$": "babel-jest"
+    }
   }
 }

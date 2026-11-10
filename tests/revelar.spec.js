@@ -1,10 +1,9 @@
 // Testes de abrir células, cascata e cronômetro (Gustavo — G4). Casos da seção 5 do PLANEJAMENTO.md.
 // Modo somente testes: o jogo ainda não existe, então estes testes FALHAM de propósito.
-import { test, expect, vi, afterEach } from 'vitest';
 import { abrirJogo, screen, celula, celulasNoEstado, cliqueDireito, MINAS_COLUNAS } from './helpers.js';
 
 afterEach(() => {
-  vi.useRealTimers();
+  jest.useRealTimers();
 });
 
 test('TC-CM-05 cascata: clicar 5-0 abre as colunas 0 a 8', async () => {
@@ -34,17 +33,17 @@ test('TC-CM-06 célula aberta não muda com novos cliques', async () => {
 test('TC-CM-07 cronômetro começa no primeiro clique', async () => {
   // Relógio falso: "esperar" sem esperar de verdade. Inclui Date e performance.now,
   // para valer qualquer que seja a forma de o jogo medir o tempo.
-  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
-  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  jest.useFakeTimers(); // relógio falso moderno: inclui Date e performance.now
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: jest.advanceTimersByTime });
   const segundos = () => Number(screen.getByTestId('cronometro').textContent);
 
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/); // sem clique, não conta
 
   await user.click(celula(5, 0));
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   const depois = segundos();
   expect(depois).toBeGreaterThanOrEqual(1);
-  vi.advanceTimersByTime(1000);
+  jest.advanceTimersByTime(1000);
   expect(segundos()).toBeGreaterThan(depois);
 });

@@ -1,14 +1,13 @@
 // Testes de derrota, vitória e reinício (Breno — B3 e B4).
-import { test, expect, vi, afterEach } from 'vitest';
 import { abrirJogo, screen, celula, todasAsCelulas, celulasNoEstado, cliqueDireito, MINAS_COLUNAS, LINHAS, COLUNAS } from './helpers.js';
 
-afterEach(() => vi.useRealTimers());
+afterEach(() => jest.useRealTimers());
 
 test('TC-CM-12 derrota revela minas e trava a partida', async () => {
-  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
-  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  jest.useFakeTimers(); // relógio falso moderno: inclui Date e performance.now
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: jest.advanceTimersByTime });
   await user.click(celula(5, 12)); // abre o lado direito e liga o cronômetro
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   await user.click(celula(0, 9));
   expect(celula(0, 9)).toHaveAttribute('data-estado', 'mina-explodida');
   for (const posicao of MINAS_COLUNAS.split(',').filter((p) => p !== '0-9')) {
@@ -20,7 +19,7 @@ test('TC-CM-12 derrota revela minas e trava a partida', async () => {
   expect(tempo).toBeGreaterThanOrEqual(1);
   await user.click(celula(5, 0));
   expect(celula(5, 0)).toHaveAttribute('data-estado', 'fechada');
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(new RegExp(`^${tempo}$`)); // parou
 });
 
@@ -46,10 +45,10 @@ test('TC-CM-14 derrota marca bandeira errada', async () => {
 });
 
 test('TC-CM-15 vitória abre seguras e marca minas', async () => {
-  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
-  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  jest.useFakeTimers(); // relógio falso moderno: inclui Date e performance.now
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: jest.advanceTimersByTime });
   await user.click(celula(5, 0));
-  vi.advanceTimersByTime(2000); // o cronômetro está contando
+  jest.advanceTimersByTime(2000); // o cronômetro está contando
   await user.click(celula(5, 12));
   expect(celulasNoEstado('aberta')).toHaveLength(212);
   expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você venceu!$/);
@@ -57,16 +56,16 @@ test('TC-CM-15 vitória abre seguras e marca minas', async () => {
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^0$/);
   const tempo = Number(screen.getByTestId('cronometro').textContent);
   expect(tempo).toBeGreaterThanOrEqual(1);
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(new RegExp(`^${tempo}$`)); // parou
 });
 
 test('TC-CM-16 reiniciar restaura o estado inicial', async () => {
-  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date', 'performance'] });
-  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: vi.advanceTimersByTime });
+  jest.useFakeTimers(); // relógio falso moderno: inclui Date e performance.now
+  const user = await abrirJogo({ minas: MINAS_COLUNAS }, { advanceTimers: jest.advanceTimersByTime });
   await user.click(celula(5, 0));
   await cliqueDireito(user, celula(1, 9));
-  vi.advanceTimersByTime(3000); // o cronômetro andou
+  jest.advanceTimersByTime(3000); // o cronômetro andou
   await user.click(celula(0, 9)); // perde: tabuleiro travado e mensagem na tela
   expect(screen.getByTestId('mensagem')).toHaveTextContent(/^Você perdeu!$/);
   await user.click(screen.getByTestId('btn-reiniciar'));
@@ -74,7 +73,7 @@ test('TC-CM-16 reiniciar restaura o estado inicial', async () => {
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/);
   expect(screen.getByTestId('mensagem')).toBeEmptyDOMElement();
-  vi.advanceTimersByTime(2000);
+  jest.advanceTimersByTime(2000);
   expect(screen.getByTestId('cronometro')).toHaveTextContent(/^0$/); // o cronômetro antigo não continua rodando
 });
 

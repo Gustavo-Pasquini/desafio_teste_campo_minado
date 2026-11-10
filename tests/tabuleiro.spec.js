@@ -1,6 +1,5 @@
 // Testes do tabuleiro e dos números (Gustavo — G2, G3). Casos da seção 5 do PLANEJAMENTO.md.
 // Modo somente testes: o jogo ainda não existe, então estes testes FALHAM de propósito.
-import { test, expect } from 'vitest';
 import { abrirJogo, screen, celula, todasAsCelulas, LINHAS, COLUNAS, MINAS_COLUNAS } from './helpers.js';
 
 test('TC-CM-01 tabuleiro 18 × 14: 252 células fechadas', async () => {

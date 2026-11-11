@@ -34,3 +34,13 @@ test('TC-CM-25 primeiro clique no meio abre uma área livre (20 partidas)', asyn
     for (const [dl, dc] of VIZINHAS) expect(celula(7 + dl, 9 + dc)).toHaveAttribute('data-estado', 'aberta');
   }
 });
+
+test('TC-CM-26 primeiro clique no canto abre uma área livre (20 partidas)', async () => {
+  for (let i = 0; i < 20; i++) {
+    const user = await abrirJogo();
+    await user.click(celula(0, 0));
+    expect(celula(0, 0)).toHaveAttribute('data-valor', '0');
+    for (const [l, c] of [[0, 1], [1, 0], [1, 1]]) expect(celula(l, c)).toHaveAttribute('data-estado', 'aberta');
+    expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
+  }
+});

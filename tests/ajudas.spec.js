@@ -14,3 +14,14 @@ test('TC-CM-23 modo bandeira: clique esquerdo marca e desmarca', async () => {
   expect(celula(3, 3)).toHaveAttribute('data-estado', 'fechada');
   expect(screen.getByTestId('contador-minas')).toHaveTextContent(/^40$/);
 });
+
+test('TC-CM-24 modo bandeira numa mina só marca; desligado, o clique volta a abrir', async () => {
+  const user = await abrirJogo({ minas: MINAS_COLUNAS });
+  await user.click(screen.getByTestId('btn-modo-bandeira'));
+  await user.click(celula(0, 9)); // mina
+  expect(celula(0, 9)).toHaveAttribute('data-estado', 'bandeira');
+  expect(screen.getByTestId('mensagem')).toBeEmptyDOMElement();
+  await user.click(screen.getByTestId('btn-modo-bandeira')); // desliga
+  await user.click(celula(5, 0));
+  expect(celula(5, 0)).toHaveAttribute('data-estado', 'aberta');
+});

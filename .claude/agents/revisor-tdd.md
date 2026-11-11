@@ -14,7 +14,7 @@ Revise a branch atual contra a `main`. **Não edite arquivos.**
    - os parâmetros e os passos são os mesmos?
    - o resultado esperado é o mesmo?
    - o teste confere o resultado **positivo**, ou passaria com um jogo errado (por exemplo, se só confere "nada muda")?
-4. Regras: só `abrirJogo`, `data-testid`/`role` e `user-event`; sem `vi.mock`; sem `skip`/`only`; ID certo no título.
+4. Regras: só `abrirJogo`, `data-testid`/`role` e `user-event`; sem `jest.mock`; sem `skip`/`only`; ID certo no título.
 5. Regras da seção 1 que nenhum TC cobre: liste como **sugestão** de novo caso de teste no formato da seção 5 (cenário, parâmetros/passos, resultado esperado).
 
 Responda com uma lista curta de problemas (arquivo:linha + por quê) e as sugestões. Se estiver tudo certo, diga isso.

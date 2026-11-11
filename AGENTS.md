@@ -1,6 +1,6 @@
 # AGENTS.md — desafio_teste_campo_minado
 
-Casos de teste de interface (Vitest + Testing Library, jsdom) para **Campo minado** em JavaScript. Trabalho em dupla: Gustavo (tarefas G1–G5) e Breno (tarefas B1–B5). Este arquivo vale para qualquer agente (Codex, Claude Code…).
+Casos de teste de interface (Jest + Testing Library, jsdom) para **Campo minado** em JavaScript. Trabalho em dupla: Gustavo (tarefas G1–G5) e Breno (tarefas B1–B5). Este arquivo vale para qualquer agente (Codex, Claude Code…).
 
 > ⚠️ **Modo atual: somente testes.** A fase GREEN (implementar o jogo) está **desativada até segunda ordem**. Não escreva código do jogo em `js/`. Cada teste deve **falhar pelo motivo certo** (asserção ou elemento não encontrado), nunca passar e nunca falhar por erro do próprio teste. Para quando a implementação for liberada: [docs/FASE-GREEN.md](docs/FASE-GREEN.md).
 
@@ -22,14 +22,14 @@ As duas cópias da skill são idênticas: ao mudar uma, mude a outra. Depois do 
 ```bash
 npm install
 npm test                                              # todos os testes (por enquanto todos falham, de propósito)
-npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"  # um caso
+npx jest tests/<arquivo>.spec.js -t "TC-XX-NN"  # um caso
 npm run verificar                                     # cada teste falha pelo motivo certo? tem ID do plano?
 npm run verificar:completo                            # idem + TCs do plano ainda sem teste (entrega)
 ```
 
 ## Convenções
 
-- Testes só pela interface: `abrirJogo(params)` de `tests/helpers.js`, `screen.getByTestId`, `user-event`. Sem importar `js/*.js` e sem `vi.mock`.
+- Testes só pela interface: `abrirJogo(params)` de `tests/helpers.js`, `screen.getByTestId`, `user-event`. Sem importar `js/*.js` e sem `jest.mock`.
 - `index.html` é só o esqueleto: elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado. `js/main.js` fica vazio.
 - Altere só os arquivos de teste do dono da tarefa (seção 4 do PLANEJAMENTO.md).
 - Uma branch por tarefa (`gustavo/...` ou `breno/...`), Conventional Commits em português (`test:`, `docs:`, `chore:`, `ci:`). Nunca commitar na `main`, nunca dar push nem abrir PR sem a pessoa pedir, nunca mudar `git config user.*`.

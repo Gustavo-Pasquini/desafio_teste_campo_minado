@@ -1,5 +1,5 @@
 {
-  "description": "TDD: roda os testes do Vitest depois de cada edição em js/ ou tests/ e devolve o resultado ao agente.",
+  "description": "TDD: roda os testes do Jest depois de cada edição em js/ ou tests/ e devolve o resultado ao agente.",
   "hooks": {
     "PostToolUse": [
       {

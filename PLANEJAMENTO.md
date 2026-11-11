@@ -32,29 +32,27 @@ Campo minado com tabuleiro **18 × 14 e 40 bombas**: **casos de teste de interfa
 | Item | Escolha |
 |---|---|
 | Entrega atual | **Somente os casos de teste** (`tests/`). O código do jogo não é implementado até segunda ordem (ver [docs/FASE-GREEN.md](docs/FASE-GREEN.md)) |
-| Executor dos testes | [Vitest](https://vitest.dev) |
+| Executor dos testes | [Jest](https://jestjs.io) 29, com `babel-jest` (converte os ES Modules para CommonJS só nos testes) |
 | Testes de interface | [Testing Library](https://testing-library.com) (`@testing-library/dom` + `@testing-library/user-event` + `@testing-library/jest-dom`), em JavaScript |
-| "Navegador" dos testes | [jsdom](https://github.com/jsdom/jsdom) (`environment: 'jsdom'` no `vitest.config.js`). Não precisa baixar navegador |
+| "Navegador" dos testes | [jsdom](https://github.com/jsdom/jsdom) (`testEnvironment: 'jsdom'` no `package.json`, via `jest-environment-jsdom`). Não precisa baixar navegador |
 | Esqueleto da tela | `index.html` com os elementos da seção 3 **vazios** + `js/main.js` vazio. É só o "molde" que os testes abrem |
 | Node | 18 ou superior |
 | CI | GitHub Actions rodando `npm ci` e `npm run verificar` em todo push e Pull Request |
 
-Dependências de desenvolvimento (tarefa G1): `vitest`, `@vitest/ui`, `jsdom`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`.
+Dependências de desenvolvimento (tarefa G1): `jest`, `jest-environment-jsdom`, `babel-jest`, `@babel/core`, `@babel/preset-env`, `@testing-library/dom`, `@testing-library/user-event`, `@testing-library/jest-dom`.
 
 Comandos que o projeto deve ter (`package.json` da tarefa G1):
 
 ```bash
 npm install                 # instala dependências (não baixa navegador)
-npm test                    # roda os testes (vitest run) — por enquanto TODOS falham, de propósito
+npm test                    # roda os testes (jest) — por enquanto TODOS falham, de propósito
 npm run verificar           # confere se cada teste falha pelo motivo certo e tem um ID do plano
 npm run verificar:completo  # idem + acusa TCs do plano que ainda não têm teste (usar na entrega)
-npm run test:ui             # interface visual do Vitest no navegador (vitest --ui)
 ```
 
 ```json
 "scripts": {
-  "test": "vitest run",
-  "test:ui": "vitest --ui",
+  "test": "jest",
   "verificar": "node scripts/verificar-testes.mjs",
   "verificar:completo": "node scripts/verificar-testes.mjs --completo"
 }
@@ -82,9 +80,8 @@ O `scripts/verificar-testes.mjs` (já no repositório) faz essa conferência soz
 // tests/helpers.js
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/vitest';
+import '@testing-library/jest-dom';
 
 // Caminho a partir da raiz (no ambiente jsdom, `new URL(..., import.meta.url)` não funciona com o fs).
 const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf8');
@@ -93,7 +90,7 @@ const corpo = html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1];
 export async function abrirJogo(params = {}, opcoesUser = {}) {
   window.history.replaceState({}, '', '/?' + new URLSearchParams(params)); // parâmetros da seção 3
   document.body.innerHTML = corpo;          // mesmo HTML do jogo
-  vi.resetModules();                        // cada teste começa um jogo novo
+  jest.resetModules();                        // cada teste começa um jogo novo
   await import('../js/main.js');            // vazio por enquanto; na fase GREEN, inicia o jogo
   return userEvent.setup(opcoesUser);       // "user" para clicar como um jogador
 }
@@ -102,7 +99,6 @@ export async function abrirJogo(params = {}, opcoesUser = {}) {
 Exemplo de caso de teste:
 
 ```js
-import { test, expect } from 'vitest';
 import { screen } from '@testing-library/dom';
 import { abrirJogo } from './helpers.js';
 
@@ -118,7 +114,7 @@ test('TC-XX-01 exemplo', async () => {
 - Os testes **só** acessam o jogo pelo que o usuário vê/clica: `screen.getByTestId(...)`, `getByRole(...)` e `user.click`, `user.dblClick`, `user.pointer(...)`. Nada de importar `js/*.js` ou chamar funções internas.
 - Clique direito: `await user.pointer({ keys: '[MouseRight]', target: elemento })`. Clique duplo: `await user.dblClick(elemento)`.
 - O jsdom **não lê CSS**. Esconder/mostrar se confere pelo atributo `hidden` (`toBeVisible()`); bloqueio, pelo `disabled` (`toBeDisabled()`).
-- Tempo (cronômetro): `vi.useFakeTimers()` no teste, `abrirJogo(params, { advanceTimers: vi.advanceTimersByTime })` e `vi.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
+- Tempo (cronômetro): `jest.useFakeTimers()` no teste, `abrirJogo(params, { advanceTimers: jest.advanceTimersByTime })` e `jest.advanceTimersByTime(2000)` para "esperar" 2 s sem esperar de verdade.
 - Todo elemento que um teste usa tem `data-testid` (lista na seção 3). Se precisar de um novo, adicione na seção 3 no mesmo PR.
 - Aleatoriedade é controlada por **parâmetros de URL** (seção 3). Um teste nunca depende de sorte.
 - Cada caso de teste da seção 5 vira um `test('TC-XX-NN ...')` com o **mesmo ID no título** (o verificador exige).
@@ -159,7 +155,7 @@ desafio_teste_campo_minado/
 ├── tests/bandeiras.spec.js      Breno
 ├── tests/fim-de-jogo.spec.js    Breno
 ├── .github/workflows/testes.yml Breno
-├── vitest.config.js        G1
+├── babel.config.cjs        G1  só para os testes (Jest): ESM → CommonJS
 └── package.json            G1
 ```
 
@@ -203,7 +199,7 @@ Com ele: clicar `5-0` abre as colunas 0–8 inteiras (126 células); clicar `5-1
 Cada tarefa segue o mesmo ciclo, **um caso de teste por vez**:
 
 1. Escrever o teste do TC só a partir da especificação (seções 1, 3 e 5), sem código do jogo.
-2. Rodar só ele (`npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"`) e conferir que **falha pelo motivo certo**: asserção ou elemento não encontrado, e não erro do próprio teste.
+2. Rodar só ele (`npx jest tests/<arquivo>.spec.js -t "TC-XX-NN"`) e conferir que **falha pelo motivo certo**: asserção ou elemento não encontrado, e não erro do próprio teste.
 3. `npm run verificar` sem problemas → commit `test: TC-XX-NN <cenário>`.
 4. No fim da tarefa: revisão, atualizar a tabela de testes do README e abrir o Pull Request; o outro integrante revisa.
 
@@ -215,7 +211,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 
 | Tarefa | Branch | Arquivos | Casos de teste |
 |---|---|---|---|
-| **G1** Setup: `package.json`, `vitest.config.js` (`environment: 'jsdom'`), `js/main.js` vazio, `.gitignore`, `index.html` esqueleto (elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado), `tests/helpers.js` com `abrirJogo(params)` e `MINAS_COLUNAS` | `gustavo/g1-setup` | index.html, js/main.js, config, tests/helpers.js | — |
+| **G1** Setup: `package.json`, configuração do Jest no `package.json` + `babel.config.cjs`, `js/main.js` vazio, `.gitignore`, `index.html` esqueleto (elementos fixos da seção 3 **vazios**, sem texto nem atributos de estado), `tests/helpers.js` com `abrirJogo(params)` e `MINAS_COLUNAS` | `gustavo/g1-setup` | index.html, js/main.js, config, tests/helpers.js | — |
 | **G2** Tabuleiro 18 × 14, contador e geração das 40 minas | `gustavo/g2-tabuleiro` | tests/tabuleiro.spec.js | TC-CM-01 a 03 |
 | **G3** Números das vizinhas | `gustavo/g3-numeros` | tests/tabuleiro.spec.js | TC-CM-04, 18 |
 | **G4** Abertura em cascata, célula aberta e cronômetro | `gustavo/g4-cascata` | tests/revelar.spec.js | TC-CM-05 a 07 |
@@ -233,7 +229,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 
 ## 5. Casos de teste (interface)
 
-Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo escuta o evento `contextmenu`). Clique duplo: `user.dblClick(celula)`. Cronômetro: relógio falso do Vitest (`vi.useFakeTimers()`).
+Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo escuta o evento `contextmenu`). Clique duplo: `user.dblClick(celula)`. Cronômetro: relógio falso do Jest (`jest.useFakeTimers()`).
 
 ### Gustavo — tabuleiro, números e cascata
 

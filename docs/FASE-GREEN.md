@@ -28,7 +28,7 @@ A divisão dos arquivos de `js/` entre Gustavo e Breno já está na seção 2 do
 ### Dependências e scripts a adicionar
 
 ```bash
-npm install -D http-server @stryker-mutator/core @stryker-mutator/vitest-runner
+npm install -D http-server @stryker-mutator/core @stryker-mutator/jest-runner
 ```
 
 ```json
@@ -42,8 +42,7 @@ npm install -D http-server @stryker-mutator/core @stryker-mutator/vitest-runner
 
 ```json
 {
-  "testRunner": "vitest",
-  "vitest": { "configFile": "vitest.config.js" },
+  "testRunner": "jest",
   "mutate": ["js/**/*.js", "!js/main.js"],
   "reporters": ["clear-text", "progress", "html"]
 }

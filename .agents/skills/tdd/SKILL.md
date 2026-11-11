@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Escreve os casos de teste de interface (Vitest + Testing Library) de uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5), um TC por vez, a partir da especificação, confirmando que cada um falha pelo motivo certo. Modo atual — somente testes, a fase GREEN (implementar o jogo) está desativada. Use sempre que for criar ou alterar testes neste repositório, ou quando o usuário disser "próximo"/"go".
+description: Escreve os casos de teste de interface (Jest + Testing Library) de uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5), um TC por vez, a partir da especificação, confirmando que cada um falha pelo motivo certo. Modo atual — somente testes, a fase GREEN (implementar o jogo) está desativada. Use sempre que for criar ou alterar testes neste repositório, ou quando o usuário disser "próximo"/"go".
 ---
 
 # TDD neste repositório — modo **somente testes**
@@ -48,7 +48,7 @@ Apresente também e espere a confirmação:
 2. **Não** abra nem crie nada em `js/`: o teste nasce só da especificação.
 3. **Rodar só ele:**
    ```bash
-   npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"
+   npx jest tests/<arquivo>.spec.js -t "TC-XX-NN"
    ```
 4. **Conferir a falha:** precisa ser pelo motivo certo (lista acima). Se for erro do próprio teste, corrija e rode de novo. Se **passou**, o teste está fraco: ele precisa conferir algo que só existe com o jogo funcionando. Mostre ao usuário a mensagem de falha.
 5. **Conferir o conjunto:** `npm run verificar` sem problemas (o hook já faz isso depois de cada edição).
@@ -77,7 +77,7 @@ Um bom teste lê como a especificação da seção 5 e vai continuar valendo qua
 
 ❌ Não faça:
 - Criar, importar ou chamar código de `js/`.
-- Usar `vi.mock`. O único "falso" permitido é o relógio (`vi.useFakeTimers()`).
+- Usar `jest.mock`. O único "falso" permitido é o relógio (`jest.useFakeTimers()`).
 - Ler variáveis globais, `localStorage` ou estado interno.
 - Depender de sorte (sem parâmetro de URL, o teste só pode conferir regras que valem para qualquer sorteio).
 - Usar `test.skip`, `test.todo` ou `.only`.
@@ -115,7 +115,6 @@ Tarefa **G3**, caso **TC-CM-04** (números das vizinhas).
 Teste — `tests/tabuleiro.spec.js`:
 
 ```js
-import { test, expect } from 'vitest';
 import { screen } from '@testing-library/dom';
 import { abrirJogo, MINAS_COLUNAS } from './helpers.js';
 
@@ -132,7 +131,7 @@ test('TC-CM-04 números mostram quantas minas há em volta', async () => {
 });
 ```
 
-`npx vitest run tests/tabuleiro.spec.js -t "TC-CM-04"` → falha com `TestingLibraryElementError: Unable to find an element by: [data-testid="celula-0-8"]` — o tabuleiro não é desenhado porque o jogo não existe. É o motivo certo. `npm run verificar` → sem problemas → commit `test: TC-CM-04 números das vizinhas`.
+`npx jest tests/tabuleiro.spec.js -t "TC-CM-04"` → falha com `TestingLibraryElementError: Unable to find an element by: [data-testid="celula-0-8"]` — o tabuleiro não é desenhado porque o jogo não existe. É o motivo certo. `npm run verificar` → sem problemas → commit `test: TC-CM-04 números das vizinhas`.
 
 
 Próximo ciclo: TC-CM-05.

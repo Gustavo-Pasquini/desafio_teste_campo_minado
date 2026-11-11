@@ -1,0 +1,15 @@
+{
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom"
+  },
+  "mutate": [
+    "js/**/*.js",
+    "!js/main.js"
+  ],
+  "reporters": [
+    "clear-text",
+    "progress",
+    "html"
+  ]
+}

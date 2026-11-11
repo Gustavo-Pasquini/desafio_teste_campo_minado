@@ -14,7 +14,7 @@ import { join, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
-export const MODO = 'somente-testes'; // troque para 'tdd-completo' quando a fase GREEN for liberada
+export const MODO = 'tdd-completo'; // troque para 'tdd-completo' quando a fase GREEN for liberada
 
 const MOTIVOS_CERTOS = [/^AssertionError/, /^TestingLibraryElementError/, /^Error: expect\(/, /^JestExtendError/];
 const semCor = (s) => String(s ?? '').replace(/\x1b\[[0-9;]*m/g, '');

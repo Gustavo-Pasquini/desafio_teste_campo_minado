@@ -13,7 +13,7 @@ Campo minado com tabuleiro **18 × 14 e 40 bombas**: **casos de teste de interfa
 
 - **Tabuleiro:** 18 colunas × 14 linhas = **252 células**. Linhas `0..13`, colunas `0..17`.
 - **40 minas**, 212 células seguras.
-- **Primeiro clique nunca é mina:** no modo aleatório, as minas são sorteadas **depois** do primeiro clique, sem usar a célula clicada.
+- **Primeiro clique abre uma área livre:** no modo aleatório, as minas são sorteadas **depois** do primeiro clique, sem usar a célula clicada **nem as 8 vizinhas**. Assim a célula clicada vale 0 e abre em cascata.
 - **Clique esquerdo** abre a célula:
   - mina → derrota;
   - número → mostra quantas das 8 vizinhas têm mina;
@@ -25,6 +25,7 @@ Campo minado com tabuleiro **18 × 14 e 40 bombas**: **casos de teste de interfa
 - **Derrota:** mostra todas as minas, marca a mina clicada e as bandeiras erradas; o tabuleiro trava.
 - **Vitória:** abrir as 212 células seguras. As minas restantes recebem bandeira, contador vai a 0; o tabuleiro trava.
 - **Reiniciar** volta tudo ao estado inicial.
+- **Modo bandeira:** o botão `btn-modo-bandeira` (elemento fixo do esqueleto) liga e desliga um modo em que o clique esquerdo coloca/tira bandeira em vez de abrir. Desligado, o clique esquerdo volta a abrir.
 
 ## 2. Stack, comandos e estrutura
 
@@ -218,6 +219,7 @@ Cada integrante é **dono de arquivos de teste diferentes** (coluna "Arquivos").
 | **G2** Tabuleiro 18 × 14, contador e geração das 40 minas | `gustavo/g2-tabuleiro` | tests/tabuleiro.spec.js | TC-CM-01 a 03 |
 | **G3** Números das vizinhas | `gustavo/g3-numeros` | tests/tabuleiro.spec.js | TC-CM-04, 18 |
 | **G4** Abertura em cascata, célula aberta e cronômetro | `gustavo/g4-cascata` | tests/revelar.spec.js | TC-CM-05 a 07 |
+| **G6** Modo bandeira e primeiro clique com área livre | `gustavo/g6-ajudas` | tests/ajudas.spec.js | TC-CM-23 a 26 |
 
 ### Breno
 
@@ -245,6 +247,10 @@ Clique direito: `user.pointer({ keys: '[MouseRight]', target: celula })` (o jogo
 | TC-CM-06 | Célula aberta não muda | Abrir 5-8, depois clique esquerdo e direito nela | Continua `aberta`; contador continua 40 |
 | TC-CM-07 | Cronômetro | Com relógio falso: avançar 2 s sem clicar; depois clicar 5-0 e avançar 2 s | Antes do clique = 0; depois do clique ≥ 1 e aumentando |
 | TC-CM-18 | Célula sem minas em volta | `minas=MINAS_COLUNAS`, clicar 5-0 | `celula-5-0` = `aberta` com `data-valor` = 0 |
+| TC-CM-23 | Modo bandeira | `minas=MINAS_COLUNAS`; `btn-modo-bandeira`; clique esquerdo em 3-3, depois de novo | `bandeira` e contador 39; depois `fechada` e contador 40 |
+| TC-CM-24 | Modo bandeira numa mina | Modo ligado, clique esquerdo em 0-9; desligar o modo; clicar 5-0 | 0-9 = `bandeira`, sem derrota (`mensagem` vazia); 5-0 abre |
+| TC-CM-25 | Área livre no 1º clique (meio) | Sem parâmetros. 20 vezes: abrir e clicar 7-9 | 7-9 `aberta` com valor 0 e as 8 vizinhas `aberta` |
+| TC-CM-26 | Área livre no 1º clique (canto) | Sem parâmetros. 20 vezes: abrir e clicar 0-0 | 0-0 valor 0; 0-1, 1-0 e 1-1 `aberta`; contador 40 |
 
 ### Breno — bandeiras e fim de jogo
 

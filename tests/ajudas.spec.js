@@ -25,3 +25,12 @@ test('TC-CM-24 modo bandeira numa mina só marca; desligado, o clique volta a ab
   await user.click(celula(5, 0));
   expect(celula(5, 0)).toHaveAttribute('data-estado', 'aberta');
 });
+
+test('TC-CM-25 primeiro clique no meio abre uma área livre (20 partidas)', async () => {
+  for (let i = 0; i < 20; i++) {
+    const user = await abrirJogo();
+    await user.click(celula(7, 9));
+    expect(celula(7, 9)).toHaveAttribute('data-valor', '0');
+    for (const [dl, dc] of VIZINHAS) expect(celula(7 + dl, 9 + dc)).toHaveAttribute('data-estado', 'aberta');
+  }
+});

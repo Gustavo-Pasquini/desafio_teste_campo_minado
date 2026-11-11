@@ -1,0 +1,89 @@
+/* Campo minado — aparência. Os estados vêm de data-estado / data-valor (ver PLANEJAMENTO.md, seção 3). */
+:root {
+  --fundo: #eef1f5;
+  --painel: #ffffff;
+  --texto: #1f2933;
+  --fechada: #9fb3c8;
+  --fechada-hover: #b3c5d7;
+  --aberta: #f5f7fa;
+  --borda: #829ab1;
+  --tamanho: clamp(22px, calc((100vw - 48px) / 18), 34px);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+h1 { margin: 0; font-size: 1.5rem; }
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: calc(var(--tamanho) * 18 + 12px);
+  max-width: 100%;
+  padding: 8px 12px;
+  background: var(--painel);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+[data-testid="btn-reiniciar"] {
+  padding: 6px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  background: var(--aberta);
+  font: inherit;
+  cursor: pointer;
+}
+
+[data-testid="tabuleiro"] {
+  display: grid;
+  grid-template-columns: repeat(var(--colunas, 18), var(--tamanho));
+  gap: 2px;
+  padding: 4px;
+  background: var(--borda);
+  border-radius: 6px;
+  user-select: none;
+}
+
+.celula {
+  width: var(--tamanho);
+  height: var(--tamanho);
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: var(--fechada);
+  font: 700 calc(var(--tamanho) * 0.55) / 1 system-ui, sans-serif;
+  cursor: pointer;
+}
+.celula:hover:not(:disabled) { background: var(--fechada-hover); }
+.celula:disabled { cursor: default; }
+.celula[data-estado="aberta"] { background: var(--aberta); cursor: default; }
+.celula[data-estado="mina-explodida"] { background: #e12d39; }
+.celula[data-estado="bandeira-errada"] { background: #f7c948; }
+
+.celula[data-valor="1"] { color: #1f6fd1; }
+.celula[data-valor="2"] { color: #2f8132; }
+.celula[data-valor="3"] { color: #d64545; }
+.celula[data-valor="4"] { color: #3a2f9b; }
+.celula[data-valor="5"] { color: #8d2b0b; }
+.celula[data-valor="6"] { color: #0e7c86; }
+.celula[data-valor="7"] { color: #222; }
+.celula[data-valor="8"] { color: #616e7c; }
+
+[data-testid="mensagem"] { min-height: 1.5em; margin: 0; font-size: 1.25rem; font-weight: 700; }

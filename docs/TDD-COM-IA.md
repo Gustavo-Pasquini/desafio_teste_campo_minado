@@ -35,7 +35,7 @@ Cobertura alta não prova nada: é a métrica mais fácil de o agente "otimizar"
 
 ## O que ficou de fora (e por quê)
 
-- **TDD Guard / Probity** (hook que *bloqueia* edição de código sem teste falhando): é a forma mais rígida e funciona com Vitest, Claude Code e Codex. Ficou como opção porque exige instalação global e roda com todas as permissões do usuário. Nosso hook é mais simples: ele avisa e não bloqueia. Se a dupla quiser a versão rígida, leia o código do projeto antes de instalar.
+- **TDD Guard / Probity** (hook que *bloqueia* edição de código sem teste falhando): é a forma mais rígida e funciona com Jest, Claude Code e Codex. Ficou como opção porque exige instalação global e roda com todas as permissões do usuário. Nosso hook é mais simples: ele avisa e não bloqueia. Se a dupla quiser a versão rígida, leia o código do projeto antes de instalar.
 - **Bloquear o fim do turno com testes vermelhos** (hook `Stop`): atrapalharia a fase RED, em que um teste falhando é o esperado.
 
 ## Como usar no dia a dia
@@ -57,6 +57,6 @@ Cobertura alta não prova nada: é a métrica mais fácil de o agente "otimizar"
 - nizos — [TDD Guard](https://github.com/nizos/tdd-guard)
 - Everard de Vree (Univ. de Twente) — [StrykerJS em pipeline de testes gerados por LLM](https://essay.utwente.nl/fileshare/file/111098/Final%20Project%20Everard%20de%20Vree.pdf)
 - Senko Rašić — [Improving AI-generated tests using mutation testing](https://blog.senko.net/improving-ai-generated-tests-using-mutation-testing)
-- Stryker — [Vitest runner](https://stryker-mutator.io/docs/stryker-js/vitest-runner/)
+- Stryker — [Jest runner](https://stryker-mutator.io/docs/stryker-js/jest-runner/)
 - OpenAI Codex — [Skills](https://learn.chatgpt.com/docs/build-skills), [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md), [Hooks](https://learn.chatgpt.com/docs/hooks)
 - Anthropic — [Claude Code hooks](https://docs.claude.com/en/docs/claude-code/hooks)

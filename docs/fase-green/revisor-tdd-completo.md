@@ -10,7 +10,7 @@ Revise a branch atual contra a `main`. **Não edite arquivos.**
 2. Os testes da tarefa (`tests/`):
    - têm o ID certo no título;
    - usam só `abrirJogo`, `data-testid`/`role` e `user-event`;
-   - não usam `vi.mock` do jogo nem importam `js/*.js`;
+   - não usam `jest.mock` do jogo nem importam `js/*.js`;
    - não conferem estado interno;
    - o resultado esperado bate com a seção 5 do PLANEJAMENTO.md.
 3. O código (`js/`): procure trechos que só funcionam para o cenário do teste (comparações com as constantes de `tests/helpers.js`, valores fixos suspeitos) e regras da seção 1 implementadas sem nenhum teste.

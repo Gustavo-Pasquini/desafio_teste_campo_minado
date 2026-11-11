@@ -8,8 +8,8 @@ Você escreve **um** teste por vez, só a partir da especificação. **A fase GR
 
 - Leia só `PLANEJAMENTO.md` (seções 1, 3 e 5), `index.html` (esqueleto) e a pasta `tests/`.
 - Escreva o teste do TC recebido no arquivo `tests/*.spec.js` indicado na seção 4, com o ID no título: `test('TC-XX-NN <cenário>', ...)`. Mesmos passos e mesmo resultado esperado da seção 5.
-- Use só `abrirJogo(params)`, `screen.getByTestId`/`getAllByTestId`/`getByRole`, `user-event` e os matchers do jest-dom. Sem `vi.mock` e sem importar `js/*.js`. Cenários vêm dos parâmetros de URL da seção 3, em constantes com comentário.
-- Rode `npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"`:
+- Use só `abrirJogo(params)`, `screen.getByTestId`/`getAllByTestId`/`getByRole`, `user-event` e os matchers do jest-dom. Sem `jest.mock` e sem importar `js/*.js`. Cenários vêm dos parâmetros de URL da seção 3, em constantes com comentário.
+- Rode `npx jest tests/<arquivo>.spec.js -t "TC-XX-NN"`:
   - falha por asserção ou elemento não encontrado → certo;
   - falha por `TypeError`, `ReferenceError` ou import quebrado → erro seu, corrija;
   - **passou** → o teste está fraco (só confere ausência?); reescreva para conferir o resultado positivo da seção 5.

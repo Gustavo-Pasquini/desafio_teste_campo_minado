@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Implementa uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5) com TDD em fatias verticais — um caso de teste de interface (Vitest + Testing Library) falhando, o mínimo de código para passar, repetir, e só então refatorar e revisar. Use sempre que for criar ou alterar casos de teste ou código do jogo neste repositório, ou quando o usuário disser "próximo"/"go".
+description: Implementa uma tarefa do PLANEJAMENTO.md (G1–G5, B1–B5) com TDD em fatias verticais — um caso de teste de interface (Jest + Testing Library) falhando, o mínimo de código para passar, repetir, e só então refatorar e revisar. Use sempre que for criar ou alterar casos de teste ou código do jogo neste repositório, ou quando o usuário disser "próximo"/"go".
 ---
 
 # TDD neste repositório
@@ -45,7 +45,7 @@ Apresente também e espere a confirmação:
 2. Para escrever o teste, leia `PLANEJAMENTO.md`, `index.html` e `tests/`, **não** o código de `js/`: o teste nasce da especificação, não da implementação.
 3. Rode só ele:
    ```bash
-   npx vitest run tests/<arquivo>.spec.js -t "TC-XX-NN"
+   npx jest tests/<arquivo>.spec.js -t "TC-XX-NN"
    ```
 4. Ele **tem que falhar pelo motivo certo**: a asserção não bate porque o comportamento ainda não existe. Erro de sintaxe, import quebrado ou `data-testid` digitado errado no teste não contam: corrija e rode de novo. Mostre ao usuário a mensagem de falha.
 5. Commit: `test: TC-XX-NN <cenário>`.
@@ -85,7 +85,7 @@ Um bom teste lê como a especificação da seção 5 e continua passando se a im
 
 ❌ Não faça:
 - Importar `js/*.js` direto no teste ou chamar funções internas do jogo.
-- Usar `vi.mock` nos módulos do próprio jogo. O único "falso" permitido é o relógio (`vi.useFakeTimers()`).
+- Usar `jest.mock` nos módulos do próprio jogo. O único "falso" permitido é o relógio (`jest.useFakeTimers()`).
 - Ler variáveis globais, `localStorage` ou estado interno para conferir resultado.
 - Conferir quantas vezes uma função foi chamada ou o formato de objetos internos.
 - Depender de sorte (sem parâmetro de URL, o teste só pode conferir regras que valem para qualquer sorteio, como "252 células" ou "nenhuma carta repetida").
@@ -130,7 +130,6 @@ Tarefa **G3**, caso **TC-CM-04** (números das vizinhas).
 🔴 RED — `tests/tabuleiro.spec.js`:
 
 ```js
-import { test, expect } from 'vitest';
 import { screen } from '@testing-library/dom';
 import { abrirJogo, MINAS_COLUNAS } from './helpers.js';
 
@@ -147,7 +146,7 @@ test('TC-CM-04 números mostram quantas minas há em volta', async () => {
 });
 ```
 
-`npx vitest run tests/tabuleiro.spec.js -t "TC-CM-04"` → falha porque `data-valor` não existe ainda. É o motivo certo → `test: TC-CM-04 números das vizinhas`.
+`npx jest tests/tabuleiro.spec.js -t "TC-CM-04"` → falha porque `data-valor` não existe ainda. É o motivo certo → `test: TC-CM-04 números das vizinhas`.
 
 🟢 GREEN: em `js/tabuleiro.js`, `contarVizinhas(minas, linha, coluna)`; a tela coloca o resultado em `data-valor`. `npm test` verde → `feat: mostrar quantidade de minas vizinhas (TC-CM-04)`.
 
